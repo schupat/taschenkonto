@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { InvestmentType } from "@/lib/validations/investment";
+import type { InvestmentType } from "@prisma/client";
 
 // Re-export pure function from shared module (safe for client import)
 export { getInvestmentProjection } from "@/lib/investment-projection";

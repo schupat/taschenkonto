@@ -1,14 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import type { TransactionType } from "@prisma/client";
 
-export type TransactionType =
-  | "DEPOSIT"
-  | "WITHDRAWAL"
-  | "ADJUSTMENT"
-  | "ALLOWANCE"
-  | "CHORE_REWARD"
-  | "INVESTMENT_DEPOSIT"
-  | "INVESTMENT_WITHDRAWAL"
-  | "INTEREST";
+export type { TransactionType };
 
 export async function getTransactions(
   childAccountId: string,

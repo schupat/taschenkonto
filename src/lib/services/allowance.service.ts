@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { AllowanceFrequency } from "@prisma/client";
 
 export async function getAllowanceRules(
   childAccountId: string,
@@ -93,7 +94,7 @@ export async function processAllowances() {
 
   for (const rule of dueRules) {
     const nextRunAt = computeNextRunAt(
-      rule.frequency as "WEEKLY" | "MONTHLY",
+      rule.frequency,
       now,
       rule.dayOfWeek,
       rule.dayOfMonth
@@ -128,7 +129,7 @@ export async function processAllowances() {
 }
 
 function computeNextRunAt(
-  frequency: "WEEKLY" | "MONTHLY",
+  frequency: AllowanceFrequency,
   from: Date,
   dayOfWeek?: number | null,
   dayOfMonth?: number | null
