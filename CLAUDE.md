@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-KidsVault is an open-source family banking web app. Parents manage virtual "bank accounts" for children (allowance, chores, savings goals). Kids see their balance in a retro CRT terminal kiosk. **No real money is handled** — only numbers representing what parents track offline.
+Taschenkonto is an open-source family banking web app. Parents manage virtual "bank accounts" for children (allowance, chores, savings goals). Kids see their balance in a retro CRT terminal kiosk. **No real money is handled** — only numbers representing what parents track offline.
 
 ## Tech Stack
 

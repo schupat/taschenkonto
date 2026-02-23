@@ -167,7 +167,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Why KidsVault ───────────────────────────────────── */}
+      {/* ── Why Taschenkonto ────────────────────────────────── */}
       <section className="border-t border-border/50 bg-bg-card py-20">
         <div className="mx-auto max-w-5xl px-6">
           <div className="text-center">
@@ -223,7 +223,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2.5">
             <span className="text-xl">🏦</span>
             <span className="text-sm font-semibold text-text-primary">
-              KidsVault
+              Taschenkonto
             </span>
             <span className="hidden text-sm text-text-muted sm:inline">
               — {t("marketing.footerTagline")}

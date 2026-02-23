@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "KidsVault",
+    "appName": "Taschenkonto",
     "loading": "Laden...",
     "save": "Speichern",
     "cancel": "Abbrechen",
@@ -51,12 +51,12 @@
     "kidBenefit2": "Sparziele motivieren zum Sparen",
     "kidBenefit3": "Aufgaben erledigen und Geld verdienen",
     "kidBenefit4": "Finanzwissen spielerisch lernen",
-    "whyTitle": "Warum KidsVault?",
+    "whyTitle": "Warum Taschenkonto?",
     "whySubtitle": "Wir glauben, dass Kinder den Umgang mit Geld früh lernen sollten.",
     "whyOpenSourceTitle": "Open Source",
     "whyOpenSourceDesc": "Vollständig quelloffen. Keine versteckten Kosten, keine Datensammlung.",
     "whyNoRealMoneyTitle": "Kein echtes Geld",
-    "whyNoRealMoneyDesc": "KidsVault verwaltet nur Zahlen. Du behältst die volle Kontrolle über echtes Geld.",
+    "whyNoRealMoneyDesc": "Taschenkonto verwaltet nur Zahlen. Du behältst die volle Kontrolle über echtes Geld.",
     "whyPrivacyTitle": "Datenschutz",
     "whyPrivacyDesc": "Self-hosted möglich. Deine Daten bleiben bei dir.",
     "bottomCtaTitle": "Bereit loszulegen?",
@@ -71,7 +71,7 @@
     "login": "Anmelden",
     "logout": "Abmelden",
     "email": "E-Mail-Adresse",
-    "loginTitle": "Bei KidsVault anmelden",
+    "loginTitle": "Bei Taschenkonto anmelden",
     "loginSubtitle": "Wir senden dir einen Login-Link per E-Mail.",
     "loginButton": "Magic Link senden",
     "loginError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
@@ -217,7 +217,7 @@
     "topUpAmount": "Nachzahlungsbetrag"
   },
   "kiosk": {
-    "welcome": "Willkommen bei KidsVault",
+    "welcome": "Willkommen bei Taschenkonto",
     "enterPin": "PIN eingeben",
     "yourBalance": "Dein Guthaben",
     "recentTransactions": "Letzte Buchungen",

@@ -14,7 +14,7 @@ import { InvestmentTerminal } from "@/components/kiosk/InvestmentTerminal";
 import { InvestmentProjectionGraph } from "@/components/kiosk/InvestmentProjectionGraph";
 
 const BOOT_LINES = [
-  "KIDSVAULT TERMINAL v2.0",
+  "TASCHENKONTO TERMINAL v2.0",
   "Initializing secure connection...",
   "Loading account data...",
   "Establishing session...",
@@ -240,7 +240,7 @@ export default function KioskDashboard() {
       {/* Footer */}
       <div className="py-4 text-center text-xs text-kiosk-text-dim">
         <span className="crt-glow-amber text-kiosk-amber/50">&#9608;</span>
-        {" "}KIDSVAULT TERMINAL v2.0 — AUTO-REFRESH 10s{" "}
+        {" "}TASCHENKONTO TERMINAL v2.0 — AUTO-REFRESH 10s{" "}
         <span className="crt-glow-amber text-kiosk-amber/50">&#9608;</span>
       </div>
     </div>

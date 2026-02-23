@@ -16,7 +16,7 @@ export default function MarketingLayout({
           <Link href="/" className="flex items-center gap-2.5">
             <span className="text-2xl">🏦</span>
             <span className="text-xl font-bold tracking-tight text-text-primary">
-              KidsVault
+              Taschenkonto
             </span>
           </Link>
           <nav className="flex items-center gap-3">

@@ -18,13 +18,13 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "KidsVault",
+  title: "Taschenkonto",
   description: "Das Familien-Taschengeld-System",
 };
 
 // Static inline script to prevent dark mode flash — runs before React hydration.
 // This is a hardcoded string with no user input, so dangerouslySetInnerHTML is safe here.
-const themeScript = `(function(){try{var t=localStorage.getItem("kidsvault-theme");var d=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches);document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
+const themeScript = `(function(){try{var t=localStorage.getItem("taschenkonto-theme");var d=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches);document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
 
 export default async function LocaleLayout({
   children,

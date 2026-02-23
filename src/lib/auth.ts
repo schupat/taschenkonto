@@ -7,7 +7,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     Resend({
-      from: process.env.AUTH_EMAIL_FROM || "KidsVault <noreply@kidsvault.app>",
+      from: process.env.AUTH_EMAIL_FROM || "Taschenkonto <noreply@taschenkonto.app>",
     }),
   ],
   session: { strategy: "jwt" },
