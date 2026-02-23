@@ -50,7 +50,7 @@ export default async function ChildDetailPage({
       </Link>
 
       {/* Hero Section */}
-      <div className="animate-fade-in-up mt-4 rounded-2xl border border-border/50 bg-white p-6 shadow-sm">
+      <div className="animate-fade-in-up mt-4 rounded-2xl border border-border/50 bg-bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-light text-4xl">
@@ -103,7 +103,7 @@ export default async function ChildDetailPage({
               return (
                 <div
                   key={goal.id}
-                  className="card-hover rounded-xl border border-border/50 bg-white p-4 shadow-sm"
+                  className="card-hover rounded-xl border border-border/50 bg-bg-card p-4 shadow-sm"
                 >
                   <div className="flex justify-between">
                     <span className="font-semibold text-text-primary">
@@ -192,7 +192,7 @@ export default async function ChildDetailPage({
             {transactions.length}
           </span>
         </div>
-        <div className="mt-3 overflow-hidden rounded-2xl border border-border/50 bg-white shadow-sm">
+        <div className="mt-3 overflow-hidden rounded-2xl border border-border/50 bg-bg-card shadow-sm">
           <TransactionTable
             transactions={transactions.map((tx) => ({
               ...tx,

@@ -63,7 +63,7 @@ export async function InvestmentCard({
   );
 
   return (
-    <div className="card-hover rounded-xl border border-border/50 bg-white p-4 shadow-sm">
+    <div className="card-hover rounded-xl border border-border/50 bg-bg-card p-4 shadow-sm">
       {/* Header row: type badge + status chip */}
       <div className="flex items-center justify-between">
         <span

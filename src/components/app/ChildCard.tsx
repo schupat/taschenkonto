@@ -25,7 +25,7 @@ export async function ChildCard({ child, currency, locale }: ChildCardProps) {
     : null;
 
   return (
-    <div className="card-hover group rounded-2xl border border-border/50 bg-white p-5 shadow-sm">
+    <div className="card-hover group rounded-2xl border border-border/50 bg-bg-card p-5 shadow-sm">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-light text-2xl">

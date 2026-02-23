@@ -1,7 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/Input";
@@ -9,43 +9,71 @@ import { Button } from "@/components/ui/Button";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(searchParams.get("verify") === "true");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    try {
+      const result = await signIn("resend", {
+        email,
+        redirect: false,
+      });
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    setLoading(false);
-
-    if (result?.error) {
+      if (result?.error) {
+        setError(t("loginError"));
+      } else {
+        setSent(true);
+      }
+    } catch {
       setError(t("loginError"));
-    } else {
-      router.push("/dashboard");
+    } finally {
+      setLoading(false);
     }
+  }
+
+  if (sent) {
+    return (
+      <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-6">
+        <div className="animate-scale-in w-full max-w-sm">
+          <div className="rounded-2xl border border-border/50 bg-bg-card p-8 shadow-xl shadow-black/5 text-center">
+            <span className="text-5xl">✉️</span>
+            <h1 className="mt-4 text-2xl font-bold text-text-primary">
+              {t("checkEmail")}
+            </h1>
+            <p className="mt-3 text-text-secondary">
+              {t("checkEmailDetail", { email: email || "..." })}
+            </p>
+            <button
+              onClick={() => setSent(false)}
+              className="mt-6 text-sm text-accent hover:text-accent-hover underline underline-offset-2"
+            >
+              {t("resend")}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-6">
       <div className="animate-scale-in w-full max-w-sm">
-        <div className="rounded-2xl border border-border/50 bg-white p-8 shadow-xl shadow-black/5">
+        <div className="rounded-2xl border border-border/50 bg-bg-card p-8 shadow-xl shadow-black/5">
           <div className="text-center">
             <span className="text-4xl">🏦</span>
             <h1 className="mt-3 text-2xl font-bold text-text-primary">
               {t("loginTitle")}
             </h1>
+            <p className="mt-2 text-sm text-text-secondary">
+              {t("loginSubtitle")}
+            </p>
           </div>
 
           {error && (
@@ -61,28 +89,20 @@ export default function LoginPage() {
               type="email"
               label={t("email")}
               required
-              placeholder="demo@kidsvault.app"
-            />
-
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              label={t("password")}
-              required
-              minLength={6}
-              placeholder="••••••••"
+              placeholder="eltern@example.de"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
             <Button type="submit" disabled={loading} className="mt-2 py-2.5">
               {loading ? "..." : t("loginButton")}
             </Button>
           </form>
-        </div>
 
-        <p className="mt-6 text-center text-xs text-text-muted">
-          Demo: demo@kidsvault.app / demo1234
-        </p>
+          <p className="mt-6 text-center text-xs text-text-muted">
+            {t("newUser")}
+          </p>
+        </div>
       </div>
     </div>
   );
