@@ -1,0 +1,18 @@
+[extend]
+# Use default gitleaks rules, with project-specific allowlist
+
+[[allowlist.paths]]
+# Seed file has demo data (not real secrets)
+path = "prisma/seed.ts"
+
+[[allowlist.paths]]
+# Example env file
+path = ".env.example"
+
+[[allowlist.paths]]
+# Dev-only fallback keys in source (clearly labeled)
+path = "src/lib/session.ts"
+
+[[allowlist.paths]]
+# Dev-only fallback key reference in proxy
+path = "src/proxy.ts"

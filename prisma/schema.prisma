@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+// --- Enums are not natively supported in SQLite ---
+// We use String fields with application-level validation via Zod.
+// When migrating to PostgreSQL, convert these to proper enums.
+
+// --- Models ---
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  hashedPassword String
+  familyId       String
+  family         Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([familyId])
+}
+
+model Family {
+  id                      String         @id @default(cuid())
+  name                    String
+  currency                String         @default("EUR")
+  timezone                String         @default("Europe/Berlin")
+  kioskInvestmentsEnabled Boolean        @default(false)
+  children                ChildAccount[]
+  parents                 User[]
+  chores                  Chore[]
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+}
+
+model ChildAccount {
+  id               String            @id @default(cuid())
+  name             String
+  avatarEmoji      String            @default("🧒")
+  color            String?
+  hashedPin        String
+  familyId         String
+  family           Family            @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  transactions     Transaction[]
+  allowanceRules   AllowanceRule[]
+  choreAssignments ChoreAssignment[]
+  savingGoals      SavingGoal[]
+  investments      Investment[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([familyId])
+}
+
+model Transaction {
+  id                String   @id @default(cuid())
+  amountCents       Int
+  type              String   // DEPOSIT, WITHDRAWAL, ADJUSTMENT, ALLOWANCE, CHORE_REWARD, INVESTMENT_DEPOSIT, INVESTMENT_WITHDRAWAL, INTEREST
+  origin            String   // MANUAL, ALLOWANCE_RULE, CHORE_COMPLETION, INVESTMENT
+  description       String
+  childAccountId    String
+  childAccount      ChildAccount @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
+  choreCompletionId String?      @unique
+  choreCompletion   ChoreCompletion? @relation(fields: [choreCompletionId], references: [id])
+  investmentId      String?
+  investment        Investment?  @relation(fields: [investmentId], references: [id])
+  createdByUserId   String?
+  revertedTransactionId String? @unique
+  createdAt         DateTime @default(now())
+
+  @@index([childAccountId])
+  @@index([createdAt])
+  @@index([investmentId])
+}
+
+model AllowanceRule {
+  id             String    @id @default(cuid())
+  amountCents    Int
+  frequency      String    // WEEKLY, MONTHLY
+  dayOfWeek      Int?      // 0-6 for weekly
+  dayOfMonth     Int?      // 1-31 for monthly
+  isActive       Boolean   @default(true)
+  lastRunAt      DateTime?
+  nextRunAt      DateTime
+  childAccountId String
+  childAccount   ChildAccount @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([childAccountId])
+  @@index([nextRunAt])
+}
+
+model Chore {
+  id          String            @id @default(cuid())
+  title       String
+  description String?
+  rewardCents Int
+  recurrence  String            @default("ONE_TIME") // ONE_TIME, DAILY, WEEKLY, MONTHLY
+  familyId    String
+  family      Family            @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  assignments ChoreAssignment[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([familyId])
+}
+
+model ChoreAssignment {
+  id             String           @id @default(cuid())
+  choreId        String
+  chore          Chore            @relation(fields: [choreId], references: [id], onDelete: Cascade)
+  childAccountId String
+  childAccount   ChildAccount     @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
+  dueDate        DateTime?
+  completion     ChoreCompletion?
+  createdAt      DateTime         @default(now())
+
+  @@index([childAccountId])
+  @@index([choreId])
+}
+
+model ChoreCompletion {
+  id              String          @id @default(cuid())
+  status          String          @default("PENDING") // PENDING, APPROVED, REJECTED
+  assignmentId    String          @unique
+  assignment      ChoreAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  transaction     Transaction?
+  approvedByUserId String?
+  completedAt     DateTime        @default(now())
+  approvedAt      DateTime?
+}
+
+model SavingGoal {
+  id             String       @id @default(cuid())
+  title          String
+  targetCents    Int
+  targetDate     DateTime?
+  childAccountId String
+  childAccount   ChildAccount @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([childAccountId])
+}
+
+model Investment {
+  id                  String    @id @default(cuid())
+  type                String    // TAGESGELD, FESTGELD
+  status              String    @default("ACTIVE") // ACTIVE, MATURED, WITHDRAWN
+  principalCents      Int       // Original amount invested (always positive)
+  currentBalanceCents Int       // Principal + accrued interest (updated by cron)
+  interestRateBps     Int       // Basis points: 500 = 5.00% p.a.
+  termMonths          Int?      // For Festgeld only; null for Tagesgeld
+  startDate           DateTime  @default(now())
+  maturityDate        DateTime? // startDate + termMonths; null for Tagesgeld
+  nextInterestAt      DateTime
+  lastInterestAt      DateTime?
+  withdrawalStatus      String?   // PENDING, APPROVED, REJECTED
+  withdrawalRequestedAt DateTime?
+  withdrawalApprovedAt  DateTime?
+  withdrawalApprovedBy  String?
+  childAccountId      String
+  childAccount        ChildAccount @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
+  familyId            String    // Denormalized for efficient cron queries
+  transactions        Transaction[]
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([childAccountId])
+  @@index([familyId])
+  @@index([nextInterestAt])
+  @@index([status])
+}
