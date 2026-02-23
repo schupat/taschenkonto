@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -21,6 +22,10 @@ export const metadata: Metadata = {
   description: "Das Familien-Taschengeld-System",
 };
 
+// Static inline script to prevent dark mode flash — runs before React hydration.
+// This is a hardcoded string with no user input, so dangerouslySetInnerHTML is safe here.
+const themeScript = `(function(){try{var t=localStorage.getItem("kidsvault-theme");var d=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches);document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
+
 export default async function LocaleLayout({
   children,
   params,
@@ -37,10 +42,19 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${inter.variable} ${ibmPlexMono.variable}`}>
+    <html
+      lang={locale}
+      className={`${inter.variable} ${ibmPlexMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

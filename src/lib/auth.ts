@@ -1,64 +1,48 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import Resend from "next-auth/providers/resend";
 import { prisma } from "./prisma";
-import { checkRateLimit, recordFailedAttempt, clearRateLimit, cleanupStaleEntries } from "./rate-limit";
-import bcrypt from "bcryptjs";
-import { z } from "zod/v4";
-
-const loginSchema = z.object({
-  email: z.email(),
-  password: z.string().min(6),
-});
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
   providers: [
-    Credentials({
-      credentials: {
-        email: { type: "email" },
-        password: { type: "password" },
-      },
-      async authorize(credentials) {
-        const parsed = loginSchema.safeParse(credentials);
-        if (!parsed.success) return null;
-
-        // VULN-07 fix: Rate limit parent login attempts per email
-        cleanupStaleEntries();
-        const rateKey = `login:${parsed.data.email}`;
-        const { allowed } = checkRateLimit(rateKey);
-        if (!allowed) return null;
-
-        const user = await prisma.user.findUnique({
-          where: { email: parsed.data.email },
-        });
-        if (!user) {
-          recordFailedAttempt(rateKey);
-          return null;
-        }
-
-        const valid = await bcrypt.compare(
-          parsed.data.password,
-          user.hashedPassword
-        );
-        if (!valid) {
-          recordFailedAttempt(rateKey);
-          return null;
-        }
-
-        clearRateLimit(rateKey);
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          familyId: user.familyId,
-        };
-      },
+    Resend({
+      from: process.env.AUTH_EMAIL_FROM || "KidsVault <noreply@kidsvault.app>",
     }),
   ],
   session: { strategy: "jwt" },
   callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.familyId = (user as { familyId: string }).familyId;
+    async signIn({ user }) {
+      // On first magic-link login, create a Family for the user
+      if (user.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { familyId: true },
+        });
+        if (dbUser && !dbUser.familyId) {
+          const family = await prisma.family.create({
+            data: {
+              name: "Meine Familie",
+              currency: "EUR",
+              timezone: "Europe/Berlin",
+            },
+          });
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { familyId: family.id },
+          });
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, trigger }) {
+      // Load familyId on initial sign-in or token refresh
+      if (user?.id || trigger === "signIn") {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub! },
+          select: { familyId: true },
+        });
+        token.familyId = dbUser?.familyId ?? undefined;
       }
       return token;
     },
@@ -70,5 +54,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   pages: {
     signIn: "/login",
+    verifyRequest: "/login?verify=true",
   },
 });

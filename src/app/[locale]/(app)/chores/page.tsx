@@ -64,7 +64,7 @@ export default async function ChoresPage({
                 className="card-hover flex items-center justify-between rounded-xl border border-warning/20 bg-warning-light/30 p-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-xl shadow-sm">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-bg-card text-xl shadow-sm">
                     {approval.assignment.childAccount.avatarEmoji}
                   </div>
                   <div>
@@ -98,7 +98,7 @@ export default async function ChoresPage({
             {chores.map((chore) => (
               <div
                 key={chore.id}
-                className="card-hover rounded-xl border border-border/50 bg-white p-5 shadow-sm"
+                className="card-hover rounded-xl border border-border/50 bg-bg-card p-5 shadow-sm"
               >
                 <div className="flex items-start justify-between">
                   <div>

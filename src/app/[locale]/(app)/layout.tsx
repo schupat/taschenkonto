@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/lib/auth";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default async function AppLayout({
   children,
@@ -40,6 +41,7 @@ export default async function AppLayout({
                 {session?.user?.email}
               </p>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </aside>
@@ -47,7 +49,7 @@ export default async function AppLayout({
       {/* Main content */}
       <div className="flex flex-1 flex-col">
         {/* Mobile header */}
-        <header className="border-b border-border bg-white px-6 py-3 md:hidden">
+        <header className="border-b border-border bg-bg-card px-6 py-3 md:hidden">
           <div className="flex items-center gap-2">
             <span className="text-xl">🏦</span>
             <span className="text-lg font-bold text-text-primary">
