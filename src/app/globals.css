@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme inline {
+@theme {
   /* Parent UI colors */
   --color-bg-app: #F5F7FA;
   --color-bg-card: #FFFFFF;
