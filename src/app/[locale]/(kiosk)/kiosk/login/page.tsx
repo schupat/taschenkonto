@@ -82,7 +82,7 @@ export default function KioskLoginPage() {
       <div className="flex min-h-[80vh] flex-col items-center justify-center gap-4">
         <div className="space-y-2 text-center">
           <div className="boot-line crt-glow text-2xl font-bold">
-            {">"} KIDSVAULT TERMINAL
+            {">"} TASCHENKONTO TERMINAL
           </div>
           <div className="boot-line text-kiosk-text-dim" style={{ animationDelay: "0.3s" }}>
             {">"} Connecting to family vault...

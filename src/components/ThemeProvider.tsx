@@ -17,7 +17,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("system");
 
   useEffect(() => {
-    const stored = localStorage.getItem("kidsvault-theme") as Theme | null;
+    const stored = localStorage.getItem("taschenkonto-theme") as Theme | null;
     if (stored) setThemeState(stored);
   }, []);
 
@@ -38,7 +38,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   function setTheme(t: Theme) {
     setThemeState(t);
-    localStorage.setItem("kidsvault-theme", t);
+    localStorage.setItem("taschenkonto-theme", t);
   }
 
   return (

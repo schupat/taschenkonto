@@ -35,7 +35,7 @@ async function main() {
   const hashedPassword = await bcrypt.hash("demo1234", 10);
   await prisma.user.create({
     data: {
-      email: "demo@kidsvault.app",
+      email: "demo@taschenkonto.app",
       name: "Anna Muster",
       hashedPassword,
       familyId: family.id,
@@ -304,7 +304,7 @@ async function main() {
 
   console.log("Seed complete!");
   console.log(`Family: ${family.name} (${family.id})`);
-  console.log(`Parent: demo@kidsvault.app / demo1234`);
+  console.log(`Parent: demo@taschenkonto.app / demo1234`);
   console.log(`Lena PIN: 1234 | Max PIN: 5678`);
   console.log(`Lena: Tagesgeld €5.02 (5% p.a.) | Max: Festgeld €3.02 (8% p.a., 6 Mo)`);
 }

@@ -1,4 +1,4 @@
-# KidsVault Security Audit Report
+# Taschenkonto Security Audit Report
 
 **Date:** 2026-02-23
 **Scope:** Full application -- authentication, API routes, data layer, kiosk system, client-side
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-KidsVault is a family banking web app managing virtual money. While it does not handle real financial transactions, it stores PINs, passwords, and family data that require protection. The audit identified **17 unique findings** across 5 severity levels:
+Taschenkonto is a family banking web app managing virtual money. While it does not handle real financial transactions, it stores PINs, passwords, and family data that require protection. The audit identified **17 unique findings** across 5 severity levels:
 
 | Severity | Count | Key Concern |
 |----------|-------|-------------|

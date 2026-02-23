@@ -3,9 +3,9 @@ services:
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: kidsvault
-      POSTGRES_PASSWORD: kidsvault
-      POSTGRES_DB: kidsvault
+      POSTGRES_USER: taschenkonto
+      POSTGRES_PASSWORD: taschenkonto
+      POSTGRES_DB: taschenkonto
     ports:
       - "5432:5432"
     volumes:
