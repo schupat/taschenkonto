@@ -3,14 +3,64 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// --- Enums ---
 
-// --- Enums are not natively supported in SQLite ---
-// We use String fields with application-level validation via Zod.
-// When migrating to PostgreSQL, convert these to proper enums.
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  ADJUSTMENT
+  ALLOWANCE
+  CHORE_REWARD
+  INVESTMENT_DEPOSIT
+  INVESTMENT_WITHDRAWAL
+  INTEREST
+}
+
+enum TransactionOrigin {
+  MANUAL
+  ALLOWANCE_RULE
+  CHORE_COMPLETION
+  INVESTMENT
+}
+
+enum AllowanceFrequency {
+  WEEKLY
+  MONTHLY
+}
+
+enum ChoreRecurrence {
+  ONE_TIME
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum CompletionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum InvestmentType {
+  TAGESGELD
+  FESTGELD
+}
+
+enum InvestmentStatus {
+  ACTIVE
+  MATURED
+  WITHDRAWN
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
 
 // --- Models ---
 
@@ -60,20 +110,20 @@ model ChildAccount {
 }
 
 model Transaction {
-  id                String   @id @default(cuid())
-  amountCents       Int
-  type              String   // DEPOSIT, WITHDRAWAL, ADJUSTMENT, ALLOWANCE, CHORE_REWARD, INVESTMENT_DEPOSIT, INVESTMENT_WITHDRAWAL, INTEREST
-  origin            String   // MANUAL, ALLOWANCE_RULE, CHORE_COMPLETION, INVESTMENT
-  description       String
-  childAccountId    String
-  childAccount      ChildAccount @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
-  choreCompletionId String?      @unique
-  choreCompletion   ChoreCompletion? @relation(fields: [choreCompletionId], references: [id])
-  investmentId      String?
-  investment        Investment?  @relation(fields: [investmentId], references: [id])
-  createdByUserId   String?
-  revertedTransactionId String? @unique
-  createdAt         DateTime @default(now())
+  id                    String            @id @default(cuid())
+  amountCents           Int
+  type                  TransactionType
+  origin                TransactionOrigin
+  description           String
+  childAccountId        String
+  childAccount          ChildAccount      @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
+  choreCompletionId     String?           @unique
+  choreCompletion       ChoreCompletion?  @relation(fields: [choreCompletionId], references: [id])
+  investmentId          String?
+  investment            Investment?       @relation(fields: [investmentId], references: [id])
+  createdByUserId       String?
+  revertedTransactionId String?           @unique
+  createdAt             DateTime          @default(now())
 
   @@index([childAccountId])
   @@index([createdAt])
@@ -81,18 +131,18 @@ model Transaction {
 }
 
 model AllowanceRule {
-  id             String    @id @default(cuid())
+  id             String             @id @default(cuid())
   amountCents    Int
-  frequency      String    // WEEKLY, MONTHLY
-  dayOfWeek      Int?      // 0-6 for weekly
-  dayOfMonth     Int?      // 1-31 for monthly
-  isActive       Boolean   @default(true)
+  frequency      AllowanceFrequency
+  dayOfWeek      Int?               // 0-6 for weekly
+  dayOfMonth     Int?               // 1-31 for monthly
+  isActive       Boolean            @default(true)
   lastRunAt      DateTime?
   nextRunAt      DateTime
   childAccountId String
-  childAccount   ChildAccount @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  childAccount   ChildAccount       @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 
   @@index([childAccountId])
   @@index([nextRunAt])
@@ -103,7 +153,7 @@ model Chore {
   title       String
   description String?
   rewardCents Int
-  recurrence  String            @default("ONE_TIME") // ONE_TIME, DAILY, WEEKLY, MONTHLY
+  recurrence  ChoreRecurrence   @default(ONE_TIME)
   familyId    String
   family      Family            @relation(fields: [familyId], references: [id], onDelete: Cascade)
   assignments ChoreAssignment[]
@@ -128,14 +178,14 @@ model ChoreAssignment {
 }
 
 model ChoreCompletion {
-  id              String          @id @default(cuid())
-  status          String          @default("PENDING") // PENDING, APPROVED, REJECTED
-  assignmentId    String          @unique
-  assignment      ChoreAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  transaction     Transaction?
+  id               String           @id @default(cuid())
+  status           CompletionStatus @default(PENDING)
+  assignmentId     String           @unique
+  assignment       ChoreAssignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  transaction      Transaction?
   approvedByUserId String?
-  completedAt     DateTime        @default(now())
-  approvedAt      DateTime?
+  completedAt      DateTime         @default(now())
+  approvedAt       DateTime?
 }
 
 model SavingGoal {
@@ -152,27 +202,27 @@ model SavingGoal {
 }
 
 model Investment {
-  id                  String    @id @default(cuid())
-  type                String    // TAGESGELD, FESTGELD
-  status              String    @default("ACTIVE") // ACTIVE, MATURED, WITHDRAWN
-  principalCents      Int       // Original amount invested (always positive)
-  currentBalanceCents Int       // Principal + accrued interest (updated by cron)
-  interestRateBps     Int       // Basis points: 500 = 5.00% p.a.
-  termMonths          Int?      // For Festgeld only; null for Tagesgeld
-  startDate           DateTime  @default(now())
-  maturityDate        DateTime? // startDate + termMonths; null for Tagesgeld
-  nextInterestAt      DateTime
-  lastInterestAt      DateTime?
-  withdrawalStatus      String?   // PENDING, APPROVED, REJECTED
+  id                    String            @id @default(cuid())
+  type                  InvestmentType
+  status                InvestmentStatus  @default(ACTIVE)
+  principalCents        Int
+  currentBalanceCents   Int
+  interestRateBps       Int
+  termMonths            Int?
+  startDate             DateTime          @default(now())
+  maturityDate          DateTime?
+  nextInterestAt        DateTime
+  lastInterestAt        DateTime?
+  withdrawalStatus      WithdrawalStatus?
   withdrawalRequestedAt DateTime?
   withdrawalApprovedAt  DateTime?
   withdrawalApprovedBy  String?
-  childAccountId      String
-  childAccount        ChildAccount @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
-  familyId            String    // Denormalized for efficient cron queries
-  transactions        Transaction[]
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  childAccountId        String
+  childAccount          ChildAccount      @relation(fields: [childAccountId], references: [id], onDelete: Cascade)
+  familyId              String
+  transactions          Transaction[]
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
 
   @@index([childAccountId])
   @@index([familyId])

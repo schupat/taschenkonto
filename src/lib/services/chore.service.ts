@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { ChoreRecurrence } from "@prisma/client";
 
 export async function getChores(familyId: string) {
   return prisma.chore.findMany({
@@ -17,7 +18,7 @@ export async function getChores(familyId: string) {
 
 export async function createChore(
   familyId: string,
-  data: { title: string; description?: string; rewardCents: number; recurrence?: string }
+  data: { title: string; description?: string; rewardCents: number; recurrence?: ChoreRecurrence }
 ) {
   return prisma.chore.create({
     data: {
