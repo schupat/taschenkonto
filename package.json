@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "build": "if [ -n \"$DATABASE_URL\" ]; then prisma migrate deploy; fi && next build",
+    "build": "node -e \"if(process.env.DATABASE_URL?.startsWith('postgres')){const{execFileSync}=require('child_process');execFileSync('npx',['prisma','migrate','deploy'],{stdio:'inherit'})}\" && next build",
     "start": "next start",
     "lint": "eslint",
     "audit": "npm audit --audit-level=high",
