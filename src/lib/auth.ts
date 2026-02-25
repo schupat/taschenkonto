@@ -8,7 +8,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Resend({
       apiKey: process.env.AUTH_RESEND_KEY,
-      from: process.env.AUTH_EMAIL_FROM || "Taschenkonto <noreply@taschenkonto.app>",
+      from: process.env.AUTH_EMAIL_FROM || "Taschenkonto <onboarding@resend.dev>",
     }),
   ],
   session: { strategy: "jwt" },
