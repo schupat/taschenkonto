@@ -34,12 +34,12 @@ export default function LandingPage() {
             >
               {t("marketing.cta")}
             </Link>
-            <a
-              href="#how-it-works"
+            <Link
+              href="/demo"
               className="rounded-full border border-border px-8 py-3.5 text-lg font-semibold text-text-secondary transition-all duration-200 hover:border-accent hover:text-accent"
             >
-              {t("marketing.ctaSecondary")}
-            </a>
+              {t("marketing.ctaDemo")}
+            </Link>
           </div>
         </div>
       </section>
