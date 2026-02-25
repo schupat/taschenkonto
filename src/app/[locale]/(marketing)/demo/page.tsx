@@ -221,9 +221,13 @@ export default function DemoPage() {
 function DemoShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="mx-auto max-w-lg px-4 py-8 sm:py-12">
-      <div className="crt-screen relative overflow-hidden rounded-2xl border border-kiosk-border bg-kiosk-bg font-mono text-kiosk-text">
+      <div className="crt-screen relative overflow-hidden rounded-2xl border-2 border-kiosk-border bg-kiosk-bg font-mono text-kiosk-text shadow-[0_0_60px_rgba(51,255,51,0.15)]">
         {/* Scanlines */}
         <div className="crt-scanlines pointer-events-none absolute inset-0 z-10" />
+        {/* Vignette — dark corners like a real CRT tube */}
+        <div className="crt-vignette" />
+        {/* Noise grain */}
+        <div className="crt-noise" />
         {/* Refresh line */}
         <div className="crt-refresh-line pointer-events-none absolute inset-x-0 z-10" />
         {/* Content */}
