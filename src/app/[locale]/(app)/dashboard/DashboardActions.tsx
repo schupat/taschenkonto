@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { AddChildDialog } from "@/components/app/AddChildDialog";
 
-export function DashboardActions({ familyId }: { familyId?: string }) {
+export function DashboardActions() {
   const t = useTranslations("dashboard");
   const [showAddChild, setShowAddChild] = useState(false);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
@@ -250,6 +250,7 @@ export function AllowanceDialog({ childId, currency, locale }: AllowanceDialogPr
                     >
                       {[1, 2, 3, 4, 5, 6, 0].map((d) => (
                         <option key={d} value={d}>
+                          {/* eslint-disable-next-line security/detect-object-injection */}
                           {dayNames[d]}
                         </option>
                       ))}

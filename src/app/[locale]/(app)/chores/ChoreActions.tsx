@@ -8,10 +8,10 @@ import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 
 interface ChoreActionsProps {
-  children: { id: string; name: string; avatarEmoji: string }[];
+  childAccounts: { id: string; name: string; avatarEmoji: string }[];
 }
 
-export function ChoreActions({ children }: ChoreActionsProps) {
+export function ChoreActions({ childAccounts }: ChoreActionsProps) {
   const t = useTranslations("chores");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -110,7 +110,7 @@ export function ChoreActions({ children }: ChoreActionsProps) {
               className="mt-1 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-text-primary outline-none focus:border-accent focus:ring-1 focus:ring-accent"
             >
               <option value="">-- Optional --</option>
-              {children.map((child) => (
+              {childAccounts.map((child) => (
                 <option key={child.id} value={child.id}>
                   {child.avatarEmoji} {child.name}
                 </option>

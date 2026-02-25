@@ -1,8 +1,20 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useSyncExternalStore } from "react";
 
 type Theme = "light" | "dark" | "system";
+
+const STORAGE_KEY = "taschenkonto-theme";
+
+function getStoredTheme(): Theme {
+  if (typeof window === "undefined") return "system";
+  return (localStorage.getItem(STORAGE_KEY) as Theme) || "system";
+}
+
+function subscribe(callback: () => void) {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
 
 const ThemeContext = createContext<{
   theme: Theme;
@@ -14,12 +26,7 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("system");
-
-  useEffect(() => {
-    const stored = localStorage.getItem("taschenkonto-theme") as Theme | null;
-    if (stored) setThemeState(stored);
-  }, []);
+  const theme = useSyncExternalStore(subscribe, getStoredTheme, () => "system" as Theme);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -37,8 +44,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme]);
 
   function setTheme(t: Theme) {
-    setThemeState(t);
-    localStorage.setItem("taschenkonto-theme", t);
+    localStorage.setItem(STORAGE_KEY, t);
+    // Trigger useSyncExternalStore by dispatching a storage event
+    window.dispatchEvent(new StorageEvent("storage", { key: STORAGE_KEY }));
   }
 
   return (

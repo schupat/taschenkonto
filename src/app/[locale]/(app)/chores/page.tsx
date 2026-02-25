@@ -39,7 +39,7 @@ export default async function ChoresPage({
         </div>
         <div className="animate-fade-in-up stagger-1">
           <ChoreActions
-            children={children.map((c) => ({
+            childAccounts={children.map((c) => ({
               id: c.id,
               name: c.name,
               avatarEmoji: c.avatarEmoji,

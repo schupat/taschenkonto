@@ -22,14 +22,11 @@ export default function KioskLoginPage() {
   const [selected, setSelected] = useState<Child | null>(null);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [loadingChildren, setLoadingChildren] = useState(true);
+  const [loadingChildren, setLoadingChildren] = useState(!!familyId);
   const [showWelcome, setShowWelcome] = useState(true);
 
   useEffect(() => {
-    if (!familyId) {
-      setLoadingChildren(false);
-      return;
-    }
+    if (!familyId) return;
     fetch(`/api/kiosk/children?family=${familyId}`)
       .then((r) => r.json())
       .then((data) => {

@@ -14,7 +14,7 @@ interface TopUpButtonProps {
   locale: string;
 }
 
-export function TopUpButton({ childId, investmentId, currency, locale }: TopUpButtonProps) {
+export function TopUpButton({ childId, investmentId }: TopUpButtonProps) {
   const t = useTranslations("investments");
   const tc = useTranslations("common");
   const router = useRouter();

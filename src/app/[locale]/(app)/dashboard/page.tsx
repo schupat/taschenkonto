@@ -54,7 +54,7 @@ export default async function DashboardPage({
           </p>
         </div>
         <div className="animate-fade-in-up stagger-1">
-          <DashboardActions familyId={session.familyId} />
+          <DashboardActions />
         </div>
       </div>
 
@@ -212,6 +212,7 @@ function StatCard({
 
   return (
     <div
+      // eslint-disable-next-line security/detect-object-injection
       className={`stat-card ${colors[accent]} rounded-xl border border-border/50 bg-bg-card p-5 shadow-sm`}
     >
       <p className="text-sm font-medium text-text-secondary">{label}</p>

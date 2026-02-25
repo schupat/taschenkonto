@@ -24,7 +24,7 @@ function typeLabel(type: string, t: (key: string) => string): string {
     CHORE_REWARD: t("choreReward"),
     ADJUSTMENT: t("adjustment"),
   };
-  return map[type] ?? type;
+  return map[type] ?? type; // eslint-disable-line security/detect-object-injection
 }
 
 export function TerminalLog({ transactions, currency, locale = "de" }: TerminalLogProps) {
