@@ -1,7 +1,7 @@
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { NextResponse } from "next/server";
+import { auth } from "./lib/auth";
 import { jwtVerify } from "jose";
 
 const intlMiddleware = createIntlMiddleware(routing);
@@ -17,20 +17,17 @@ function getPathWithoutLocale(pathname: string): string {
   return pathname.replace(localePattern, "/");
 }
 
-export default async function middleware(req: NextRequest) {
+export default auth(async function middleware(req) {
   const path = getPathWithoutLocale(req.nextUrl.pathname);
 
-  // Check parent auth for (app) routes
+  // Check parent auth for (app) routes using Auth.js session
   const isAppRoute = PROTECTED_APP_ROUTES.some(
     (route) => path === route || path.startsWith(route + "/")
   );
 
-  if (isAppRoute) {
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET });
-    if (!token) {
-      const loginUrl = new URL("/login", req.url);
-      return NextResponse.redirect(loginUrl);
-    }
+  if (isAppRoute && !req.auth) {
+    const loginUrl = new URL("/login", req.url);
+    return NextResponse.redirect(loginUrl);
   }
 
   // Check kiosk session for kiosk routes (except login)
@@ -59,7 +56,7 @@ export default async function middleware(req: NextRequest) {
   }
 
   return intlMiddleware(req);
-}
+});
 
 export const config = {
   matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
