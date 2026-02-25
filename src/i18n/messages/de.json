@@ -119,6 +119,9 @@
     "pinHelp": "4-6 stellige PIN für den Kiosk-Zugang",
     "avatar": "Avatar",
     "balance": "Guthaben",
+    "changePin": "PIN ändern",
+    "newPin": "Neue PIN",
+    "pinChanged": "PIN erfolgreich geändert",
     "deleteChild": "Kind entfernen",
     "deleteConfirmMessage": "Bist du sicher? Alle Daten (Buchungen, Sparziele, Anlagen) werden unwiderruflich gelöscht.",
     "openInKiosk": "Im Kiosk anzeigen"

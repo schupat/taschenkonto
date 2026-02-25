@@ -119,6 +119,9 @@
     "pinHelp": "4-6 digit PIN for kiosk access",
     "avatar": "Avatar",
     "balance": "Balance",
+    "changePin": "Change PIN",
+    "newPin": "New PIN",
+    "pinChanged": "PIN changed successfully",
     "deleteChild": "Remove Child",
     "deleteConfirmMessage": "Are you sure? All data (transactions, saving goals, investments) will be permanently deleted.",
     "openInKiosk": "View in Kiosk"

@@ -69,6 +69,18 @@ export async function updateChildAccount(
   });
 }
 
+export async function changeChildPin(
+  childId: string,
+  familyId: string,
+  newPin: string
+) {
+  const hashedPin = await bcrypt.hash(newPin, 10);
+  return prisma.childAccount.update({
+    where: { id: childId, familyId },
+    data: { hashedPin },
+  });
+}
+
 export async function deleteChildAccount(childId: string, familyId: string) {
   return prisma.childAccount.delete({
     where: { id: childId, familyId },

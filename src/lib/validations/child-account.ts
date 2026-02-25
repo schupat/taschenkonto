@@ -11,3 +11,7 @@ export const updateChildSchema = z.object({
   avatarEmoji: z.string().max(10).optional(),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
 });
+
+export const changePinSchema = z.object({
+  pin: z.string().regex(/^\d{4,6}$/, "PIN must be 4-6 digits"),
+});
