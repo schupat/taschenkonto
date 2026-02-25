@@ -1,36 +1,200 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Taschenkonto
 
-## Getting Started
+Open-Source-Familienbankingapp: Eltern verwalten virtuelle „Bankkonten" für Kinder — Taschengeld, Aufgaben, Sparziele. Kinder sehen ihren Kontostand in einem Retro-CRT-Terminal (Kiosk). **Es wird kein echtes Geld bewegt** — nur Zahlen, die Eltern offline nachhalten.
 
-First, run the development server:
+## Features
+
+- **Magic-Link-Login** — kein Passwort nötig, E-Mail-Link via [Resend](https://resend.com)
+- **Taschengeld-Regeln** — automatische wöchentliche/monatliche Buchungen (idempotenter Cron)
+- **Aufgaben & Belohnungen** — Aufgaben definieren, zuweisen, freigeben → automatische Gutschrift
+- **Sparziele** — Kinder setzen Ziele mit Fortschrittsbalken
+- **Investitionen** — Tagesgeld/Festgeld mit Zinsen (simuliert)
+- **Kiosk-Modus** — PIN-geschützter Retro-Terminal für Kinder (CRT-Scanlines, Glow, Flicker)
+- **Dark Mode** — System-Erkennung + manueller Toggle
+- **Mehrsprachig** — Deutsch (Standard) + Englisch
+- **Responsive** — Desktop, Tablet, Mobil
+
+## Tech-Stack
+
+| Bereich | Technologie |
+|---------|-------------|
+| Framework | Next.js 16 (App Router) |
+| Sprache | TypeScript |
+| Styling | Tailwind CSS v4 |
+| Datenbank | PostgreSQL + Prisma 6 |
+| Auth (Eltern) | Auth.js v5 — Magic Link via Resend |
+| Auth (Kinder) | PIN → JWT (jose) |
+| i18n | next-intl v4 (de/en) |
+| Validierung | Zod v4 |
+
+## Schnellstart
+
+### Voraussetzungen
+
+- Node.js ≥ 18
+- Docker (für PostgreSQL)
+
+### 1. Repo klonen
+
+```bash
+git clone https://github.com/schupat/taschenkonto.git
+cd taschenkonto
+npm install
+```
+
+### 2. Datenbank starten
+
+```bash
+docker compose up -d
+```
+
+Startet PostgreSQL 17 auf `localhost:5432` (User/Pass/DB: `taschenkonto`).
+
+### 3. Umgebungsvariablen
+
+```bash
+cp .env.example .env.local
+```
+
+Die Standardwerte in `.env.example` funktionieren sofort für lokale Entwicklung. Für Magic-Link-E-Mails brauchst du einen Resend-API-Key (siehe [Magic-Link-Setup](#magic-link-einrichten)).
+
+### 4. Datenbank migrieren & seeden
+
+```bash
+npx prisma migrate dev
+npx prisma db seed
+```
+
+Seed erstellt eine Demo-Familie:
+- **Eltern-Login:** `demo@taschenkonto.app` (Magic Link)
+- **Kind Lena:** PIN `1234` (Kontostand 12,50 €)
+- **Kind Max:** PIN `5678` (Kontostand 5,00 €)
+
+### 5. Dev-Server starten
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Öffne [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Magic-Link einrichten
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Taschenkonto nutzt [Resend](https://resend.com) für Magic-Link-E-Mails. Ohne API-Key funktioniert das Login nicht (es wird keine E-Mail versendet).
 
-## Learn More
+### Schritte
 
-To learn more about Next.js, take a look at the following resources:
+1. Erstelle einen kostenlosen Account auf [resend.com](https://resend.com)
+2. Gehe zu **API Keys** → neuen Key erstellen
+3. Trage den Key in `.env.local` ein:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+AUTH_RESEND_KEY="re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Absenderadresse** (optional):
+   - Zum Testen: Resend stellt `onboarding@resend.dev` bereit (Standard)
+   - Für Produktion: Eigene Domain in Resend verifizieren und eintragen:
 
-## Deploy on Vercel
+```env
+AUTH_EMAIL_FROM="Taschenkonto <noreply@deinedomain.de>"
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. **Auth-Secret** generieren (Produktion):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+openssl rand -base64 32
+```
+
+```env
+AUTH_SECRET="dein-generierter-secret"
+```
+
+## Vercel-Deployment
+
+### Umgebungsvariablen setzen
+
+In den Vercel-Projekteinstellungen unter **Settings → Environment Variables**:
+
+| Variable | Beschreibung | Pflicht |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL-Connection-String | ✅ |
+| `AUTH_SECRET` | `openssl rand -base64 32` | ✅ |
+| `AUTH_TRUST_HOST` | `true` | ✅ |
+| `AUTH_RESEND_KEY` | Resend-API-Key | ✅ |
+| `AUTH_EMAIL_FROM` | Absenderadresse | Optional |
+| `KIOSK_SESSION_SECRET` | `openssl rand -base64 32` | ✅ |
+| `CRON_SECRET` | Beliebiger Secret-String | ✅ |
+
+### PostgreSQL-Anbieter
+
+- [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres)
+- [Neon](https://neon.tech) (kostenloser Tier)
+- [Supabase](https://supabase.com) (kostenloser Tier)
+
+### Cron-Job (Taschengeld)
+
+Taschengeld-Regeln werden über einen HTTP-Endpunkt ausgeführt. Richte einen täglichen Cron ein:
+
+```
+GET /api/cron/allowance
+Header: x-cron-secret: <CRON_SECRET>
+```
+
+Auf Vercel: [Vercel Cron Jobs](https://vercel.com/docs/cron-jobs) in `vercel.json`:
+
+```json
+{
+  "crons": [{
+    "path": "/api/cron/allowance",
+    "schedule": "0 6 * * *"
+  }]
+}
+```
+
+## Kiosk-Modus
+
+Der Kiosk ist für Tablets im Hochformat optimiert. Kinder melden sich mit ihrer PIN an und sehen:
+
+- Animierter Kontostand (Count-Up/Down)
+- Sparziele mit ASCII-Fortschrittsbalken
+- Letzte Transaktionen
+- Offene Aufgaben
+
+**URL:** `/kiosk`
+
+Für einen dedizierten Kiosk: Browser im Vollbild-/Kiosk-Modus öffnen und auf `/kiosk` zeigen.
+
+## Entwicklung
+
+```bash
+npm run dev              # Dev-Server
+npm run build            # Produktions-Build
+npm run lint             # ESLint
+npx prisma studio        # Visueller DB-Browser
+npx prisma migrate dev   # Migration erstellen/ausführen
+npx prisma db seed       # Demo-Daten laden
+```
+
+## Projektstruktur
+
+```
+src/
+├── app/[locale]/
+│   ├── (marketing)/     # Öffentlich: Startseite, Login, Demo
+│   ├── (app)/           # Eltern-UI: Dashboard, Kinder, Aufgaben
+│   └── (kiosk)/kiosk/   # Kind-Terminal: PIN-Login, Kontoansicht
+├── components/
+│   ├── app/             # Eltern-UI-Komponenten
+│   ├── kiosk/           # Kiosk-Komponenten (CRT-Effekte)
+│   └── ui/              # Shared UI (Button, Card, ThemeToggle)
+├── lib/
+│   ├── services/        # Business-Logik
+│   ├── auth.ts          # Auth.js-Konfiguration
+│   └── session.ts       # Kiosk-JWT-Session
+└── i18n/messages/       # de.json, en.json
+```
+
+## Lizenz
+
+MIT
