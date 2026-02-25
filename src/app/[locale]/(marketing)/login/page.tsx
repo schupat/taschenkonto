@@ -3,7 +3,13 @@ import { redirect } from "next/navigation";
 import LoginForm from "./LoginForm";
 
 export default async function LoginPage() {
-  const session = await auth();
+  let session = null;
+  try {
+    session = await auth();
+  } catch {
+    // Stale JWT cookie with mismatched secret — ignore and show login form
+  }
+
   if (session) {
     redirect("/dashboard");
   }
