@@ -176,7 +176,12 @@ export default async function DashboardPage({
 
       {/* Kiosk Link */}
       {children.length > 0 && (
-        <div className="animate-fade-in-up stagger-4 mt-10 rounded-2xl border border-kiosk-border bg-kiosk-bg p-6 text-center">
+        <a
+          href={`/kiosk/login?family=${session.familyId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="animate-fade-in-up stagger-4 mt-10 block rounded-2xl border border-kiosk-border bg-kiosk-bg p-6 text-center transition-shadow hover:shadow-[0_0_30px_rgba(51,255,51,0.15)]"
+        >
           <p className="font-mono text-sm text-kiosk-text-dim">
             {">"} KIOSK MODE
           </p>
@@ -186,7 +191,7 @@ export default async function DashboardPage({
           <p className="mt-3 text-xs text-kiosk-text-dim">
             {t("openKiosk")} — Retro CRT Terminal
           </p>
-        </div>
+        </a>
       )}
     </div>
   );

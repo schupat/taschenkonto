@@ -30,8 +30,8 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
       ref={dialogRef}
       onClose={onClose}
       className={cn(
-        "rounded-xl border border-border bg-bg-card p-0 shadow-xl backdrop:bg-black/50",
-        "w-full max-w-md",
+        "fixed inset-0 m-auto rounded-xl border border-border bg-bg-card p-0 shadow-xl backdrop:bg-black/50",
+        "w-full max-w-md max-h-fit",
         className
       )}
     >
