@@ -166,6 +166,8 @@
     "completed": "Completed",
     "approved": "Approved",
     "addChore": "Add Chore",
+    "assignTo": "Assign to",
+    "assignHint": "Select one or more children (optional)",
     "noChores": "No chores yet."
   },
   "savingGoals": {

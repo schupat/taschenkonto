@@ -23,8 +23,8 @@ export async function POST(
   }
 
   try {
-    const assignment = await assignChore(choreId, parsed.data.childAccountId, session.familyId);
-    return NextResponse.json(assignment, { status: 201 });
+    const assignments = await assignChore(choreId, parsed.data.childAccountIds, session.familyId);
+    return NextResponse.json(assignments, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }

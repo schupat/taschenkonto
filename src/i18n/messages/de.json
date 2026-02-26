@@ -166,6 +166,8 @@
     "completed": "Erledigt",
     "approved": "Genehmigt",
     "addChore": "Aufgabe hinzufügen",
+    "assignTo": "Zuweisen an",
+    "assignHint": "Wähle ein oder mehrere Kinder (optional)",
     "noChores": "Noch keine Aufgaben vorhanden."
   },
   "savingGoals": {

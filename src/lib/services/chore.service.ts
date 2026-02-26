@@ -48,19 +48,28 @@ export async function deleteChore(choreId: string, familyId: string) {
 
 export async function assignChore(
   choreId: string,
-  childAccountId: string,
+  childAccountIds: string[],
   familyId: string
 ) {
-  // Verify both chore and child belong to the same family
-  const [chore, child] = await Promise.all([
-    prisma.chore.findFirst({ where: { id: choreId, familyId } }),
-    prisma.childAccount.findFirst({ where: { id: childAccountId, familyId } }),
-  ]);
-  if (!chore || !child) throw new Error("Not found");
+  // Verify chore belongs to family
+  const chore = await prisma.chore.findFirst({ where: { id: choreId, familyId } });
+  if (!chore) throw new Error("Not found");
 
-  return prisma.choreAssignment.create({
-    data: { choreId, childAccountId },
+  // Verify all children belong to the same family
+  const children = await prisma.childAccount.findMany({
+    where: { id: { in: childAccountIds }, familyId },
+    select: { id: true },
   });
+  if (children.length !== childAccountIds.length) throw new Error("Not found");
+
+  // Create assignments for all children in one transaction
+  return prisma.$transaction(
+    childAccountIds.map((childAccountId) =>
+      prisma.choreAssignment.create({
+        data: { choreId, childAccountId },
+      })
+    )
+  );
 }
 
 export async function markChoreCompleted(

@@ -18,6 +18,19 @@ export function ChoreActions({ childAccounts }: ChoreActionsProps) {
   const [showAdd, setShowAdd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
+
+  function toggleChild(childId: string) {
+    setSelectedChildren((prev) =>
+      prev.includes(childId) ? prev.filter((id) => id !== childId) : [...prev, childId]
+    );
+  }
+
+  function handleClose() {
+    setShowAdd(false);
+    setError("");
+    setSelectedChildren([]);
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,7 +39,6 @@ export function ChoreActions({ childAccounts }: ChoreActionsProps) {
 
     const formData = new FormData(e.currentTarget);
     const amountEur = parseFloat(formData.get("reward") as string);
-    const childId = formData.get("childId") as string;
 
     // Create the chore
     const choreRes = await fetch("/api/chores", {
@@ -48,17 +60,22 @@ export function ChoreActions({ childAccounts }: ChoreActionsProps) {
 
     const chore = await choreRes.json();
 
-    // Assign to child if selected
-    if (childId) {
-      await fetch(`/api/chores/${chore.id}/assign`, {
+    // Assign to selected children
+    if (selectedChildren.length > 0) {
+      const assignRes = await fetch(`/api/chores/${chore.id}/assign`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ childAccountId: childId }),
+        body: JSON.stringify({ childAccountIds: selectedChildren }),
       });
+      if (!assignRes.ok) {
+        setLoading(false);
+        setError("Error assigning chore");
+        return;
+      }
     }
 
     setLoading(false);
-    setShowAdd(false);
+    handleClose();
     router.refresh();
   }
 
@@ -66,7 +83,7 @@ export function ChoreActions({ childAccounts }: ChoreActionsProps) {
     <>
       <Button onClick={() => setShowAdd(true)}>{t("addChore")}</Button>
 
-      <Dialog open={showAdd} onClose={() => setShowAdd(false)} title={t("addChore")}>
+      <Dialog open={showAdd} onClose={handleClose} title={t("addChore")}>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {error && (
             <div className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
@@ -101,25 +118,34 @@ export function ChoreActions({ childAccounts }: ChoreActionsProps) {
           />
 
           <div>
-            <label htmlFor="childId" className="block text-sm font-medium text-text-secondary">
-              {t("assign")}
-            </label>
-            <select
-              id="childId"
-              name="childId"
-              className="mt-1 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-text-primary outline-none focus:border-accent focus:ring-1 focus:ring-accent"
-            >
-              <option value="">-- Optional --</option>
-              {childAccounts.map((child) => (
-                <option key={child.id} value={child.id}>
-                  {child.avatarEmoji} {child.name}
-                </option>
-              ))}
-            </select>
+            <span className="block text-sm font-medium text-text-secondary">
+              {t("assignTo")}
+            </span>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {childAccounts.map((child) => {
+                const isSelected = selectedChildren.includes(child.id);
+                return (
+                  <button
+                    key={child.id}
+                    type="button"
+                    onClick={() => toggleChild(child.id)}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                      isSelected
+                        ? "border-accent bg-accent-light text-accent"
+                        : "border-border bg-bg-card text-text-secondary hover:border-accent/50"
+                    }`}
+                  >
+                    <span>{child.avatarEmoji}</span>
+                    <span>{child.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-1 text-xs text-text-muted">{t("assignHint")}</p>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="secondary" onClick={() => setShowAdd(false)}>
+            <Button type="button" variant="secondary" onClick={handleClose}>
               {tc("cancel")}
             </Button>
             <Button type="submit" disabled={loading}>

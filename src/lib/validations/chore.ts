@@ -14,5 +14,5 @@ export const updateChoreSchema = z.object({
 });
 
 export const assignChoreSchema = z.object({
-  childAccountId: z.string().min(1),
+  childAccountIds: z.array(z.string().min(1)).min(1),
 });
