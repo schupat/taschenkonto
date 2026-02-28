@@ -36,10 +36,10 @@ export async function getChildWithSaldo(childId: string, familyId: string) {
 
   if (!child) return null;
 
+  const { hashedPin, transactions, ...safeChild } = child;
   return {
-    ...child,
-    saldoCents: child.transactions.reduce((sum, t) => sum + t.amountCents, 0),
-    transactions: undefined,
+    ...safeChild,
+    saldoCents: transactions.reduce((sum, t) => sum + t.amountCents, 0),
   };
 }
 
@@ -55,6 +55,15 @@ export async function createChildAccount(
       hashedPin,
       familyId,
     },
+    select: {
+      id: true,
+      name: true,
+      avatarEmoji: true,
+      color: true,
+      familyId: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
 }
 
@@ -66,6 +75,15 @@ export async function updateChildAccount(
   return prisma.childAccount.update({
     where: { id: childId, familyId },
     data,
+    select: {
+      id: true,
+      name: true,
+      avatarEmoji: true,
+      color: true,
+      familyId: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
 }
 
