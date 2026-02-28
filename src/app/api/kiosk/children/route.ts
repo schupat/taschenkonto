@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { checkRateLimit, recordFailedAttempt, cleanupStaleEntries } from "@/lib/rate-limit";
+import { checkRateLimit, recordFailedAttempt } from "@/lib/rate-limit";
 
 // VULN-03 fix: Rate-limit this endpoint to prevent familyId enumeration.
 // While the endpoint must remain accessible without login (it's the child-select
@@ -12,10 +12,9 @@ export async function GET(req: NextRequest) {
   }
 
   // Rate limit per IP to prevent enumeration
-  cleanupStaleEntries();
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const rateKey = `kiosk-children:${ip}`;
-  const { allowed } = checkRateLimit(rateKey);
+  const { allowed } = await checkRateLimit(rateKey);
   if (!allowed) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
@@ -26,7 +25,7 @@ export async function GET(req: NextRequest) {
     select: { id: true },
   });
   if (!family) {
-    recordFailedAttempt(rateKey);
+    await recordFailedAttempt(rateKey);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 

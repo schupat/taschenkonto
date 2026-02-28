@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
 
 // VULN-01 fix: Fail loud if secret is missing in production
 const KIOSK_SECRET = process.env.KIOSK_SESSION_SECRET;
@@ -19,6 +20,7 @@ export async function createKioskSession(
 ) {
   const token = await new SignJWT({ childAccountId, familyId })
     .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
     .setExpirationTime("8h")
     .sign(secret);
 
@@ -39,7 +41,20 @@ export async function getKioskSession() {
 
   try {
     const { payload } = await jwtVerify(token, secret);
-    return payload as { childAccountId: string; familyId: string };
+    const session = payload as { childAccountId: string; familyId: string; iat?: number };
+
+    // Reject tokens issued before the most recent PIN change
+    if (session.iat) {
+      const child = await prisma.childAccount.findUnique({
+        where: { id: session.childAccountId },
+        select: { pinChangedAt: true },
+      });
+      if (child?.pinChangedAt && session.iat < Math.floor(child.pinChangedAt.getTime() / 1000)) {
+        return null;
+      }
+    }
+
+    return session;
   } catch {
     return null;
   }

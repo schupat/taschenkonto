@@ -95,7 +95,7 @@ export async function changeChildPin(
   const hashedPin = await bcrypt.hash(newPin, 10);
   return prisma.childAccount.update({
     where: { id: childId, familyId },
-    data: { hashedPin },
+    data: { hashedPin, pinChangedAt: new Date() },
   });
 }
 

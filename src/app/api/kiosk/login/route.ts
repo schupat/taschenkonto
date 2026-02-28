@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createKioskSession } from "@/lib/session";
-import { checkRateLimit, recordFailedAttempt, clearRateLimit, cleanupStaleEntries } from "@/lib/rate-limit";
+import { checkRateLimit, recordFailedAttempt, clearRateLimit } from "@/lib/rate-limit";
 import bcrypt from "bcryptjs";
 import { z } from "zod/v4";
 
@@ -24,9 +24,8 @@ export async function POST(req: NextRequest) {
   }
 
   // VULN-04 fix: Rate limit PIN attempts per childAccountId
-  cleanupStaleEntries();
   const rateKey = `pin:${parsed.data.childAccountId}`;
-  const { allowed, retryAfterMs } = checkRateLimit(rateKey);
+  const { allowed, retryAfterMs } = await checkRateLimit(rateKey);
   if (!allowed) {
     return NextResponse.json(
       { error: "Too many attempts. Try again later." },
@@ -43,17 +42,17 @@ export async function POST(req: NextRequest) {
 
   if (!child) {
     // Don't reveal whether account exists — use same error for not-found and wrong-PIN
-    recordFailedAttempt(rateKey);
+    await recordFailedAttempt(rateKey);
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
   const valid = await bcrypt.compare(parsed.data.pin, child.hashedPin);
   if (!valid) {
-    recordFailedAttempt(rateKey);
+    await recordFailedAttempt(rateKey);
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  clearRateLimit(rateKey);
+  await clearRateLimit(rateKey);
   await createKioskSession(child.id, child.familyId);
 
   return NextResponse.json({ success: true, name: child.name });

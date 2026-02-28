@@ -126,6 +126,7 @@ model ChildAccount {
   avatarEmoji      String            @default("🧒")
   color            String?
   hashedPin        String
+  pinChangedAt     DateTime?
   familyId         String
   family           Family            @relation(fields: [familyId], references: [id], onDelete: Cascade)
   transactions     Transaction[]
@@ -137,6 +138,16 @@ model ChildAccount {
   updatedAt        DateTime          @updatedAt
 
   @@index([familyId])
+}
+
+model LoginAttempt {
+  id             String   @id @default(cuid())
+  rateKey        String   @unique
+  count          Int      @default(0)
+  firstAttemptAt DateTime @default(now())
+  lockedUntil    DateTime?
+
+  @@index([rateKey])
 }
 
 model Transaction {
