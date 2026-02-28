@@ -111,7 +111,6 @@ export default async function ChoresPage({
                 }}
                 currency={currency}
                 locale={locale}
-                formatCents={formatCents}
               />
             ))}
           </div>

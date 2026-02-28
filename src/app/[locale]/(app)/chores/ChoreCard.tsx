@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
+import { formatCents } from "@/lib/utils";
 
 interface ChoreAssignment {
   id: string;
@@ -22,10 +23,9 @@ interface ChoreCardProps {
   };
   currency: string;
   locale: string;
-  formatCents: (cents: number, currency: string, locale: string) => string;
 }
 
-export function ChoreCard({ chore, currency, locale, formatCents }: ChoreCardProps) {
+export function ChoreCard({ chore, currency, locale }: ChoreCardProps) {
   const t = useTranslations("chores");
   const tc = useTranslations("common");
   const router = useRouter();
