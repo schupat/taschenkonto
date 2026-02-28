@@ -189,7 +189,10 @@
     "progress": "{current} of {target}",
     "goalTitle": "Title",
     "targetDate": "Target Date",
-    "addGoal": "Add Saving Goal"
+    "addGoal": "Add Saving Goal",
+    "editGoal": "Edit Saving Goal",
+    "deleteGoal": "Delete Saving Goal",
+    "deleteGoalConfirm": "Really delete this saving goal?"
   },
   "investments": {
     "title": "Investments",

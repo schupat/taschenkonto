@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { formatCents } from "@/lib/utils";
 import { TransactionTable } from "@/components/app/TransactionTable";
 import { InvestmentCard } from "@/components/app/InvestmentCard";
+import { SavingGoalCard } from "@/components/app/SavingGoalCard";
 import { ChildDetailActions } from "./ChildDetailActions";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
@@ -88,48 +89,22 @@ export default async function ChildDetailPage({
             {t("savingGoals.title")}
           </h2>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {child.savingGoals.map((goal) => {
-              const progress = Math.min(
-                100,
-                Math.max(0, (child.saldoCents / goal.targetCents) * 100)
-              );
-              const progressColor =
-                progress >= 100
-                  ? "bg-success"
-                  : progress >= 50
-                    ? "bg-accent"
-                    : "bg-warning";
-
-              return (
-                <div
-                  key={goal.id}
-                  className="card-hover rounded-xl border border-border/50 bg-bg-card p-4 shadow-sm"
-                >
-                  <div className="flex justify-between">
-                    <span className="font-semibold text-text-primary">
-                      {goal.title}
-                    </span>
-                    <span
-                      className={`text-sm font-bold ${
-                        progress >= 100 ? "text-success" : "text-text-secondary"
-                      }`}
-                    >
-                      {Math.round(progress)}%
-                    </span>
-                  </div>
-                  <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-border-light">
-                    <div
-                      className={`h-full rounded-full ${progressColor} transition-all duration-700`}
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                  <p className="mt-2 text-xs text-text-muted">
-                    {formatCents(Math.max(child.saldoCents, 0), currency, locale)}{" "}
-                    / {formatCents(goal.targetCents, currency, locale)}
-                  </p>
-                </div>
-              );
-            })}
+            {child.savingGoals.map((goal) => (
+              <SavingGoalCard
+                key={goal.id}
+                goal={{
+                  id: goal.id,
+                  title: goal.title,
+                  targetCents: goal.targetCents,
+                  targetDate: goal.targetDate?.toISOString() ?? null,
+                }}
+                childId={childId}
+                saldoCents={child.saldoCents}
+                currency={currency}
+                locale={locale}
+                formatCents={formatCents}
+              />
+            ))}
           </div>
         </div>
       )}

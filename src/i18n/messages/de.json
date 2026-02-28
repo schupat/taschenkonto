@@ -189,7 +189,10 @@
     "progress": "{current} von {target}",
     "goalTitle": "Titel",
     "targetDate": "Zieldatum",
-    "addGoal": "Sparziel hinzufügen"
+    "addGoal": "Sparziel hinzufügen",
+    "editGoal": "Sparziel bearbeiten",
+    "deleteGoal": "Sparziel löschen",
+    "deleteGoalConfirm": "Sparziel wirklich löschen?"
   },
   "investments": {
     "title": "Anlagen",

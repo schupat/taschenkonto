@@ -34,6 +34,29 @@ export async function createSavingGoal(
   });
 }
 
+export async function updateSavingGoal(
+  goalId: string,
+  childId: string,
+  familyId: string,
+  data: { title?: string; targetCents?: number; targetDate?: string | null }
+) {
+  const child = await prisma.childAccount.findFirst({
+    where: { id: childId, familyId },
+  });
+  if (!child) throw new Error("Child not found");
+
+  return prisma.savingGoal.update({
+    where: { id: goalId, childAccountId: childId },
+    data: {
+      ...(data.title !== undefined && { title: data.title }),
+      ...(data.targetCents !== undefined && { targetCents: data.targetCents }),
+      ...(data.targetDate !== undefined && {
+        targetDate: data.targetDate ? new Date(data.targetDate) : null,
+      }),
+    },
+  });
+}
+
 export async function deleteSavingGoal(
   goalId: string,
   childId: string,
