@@ -119,7 +119,11 @@
     "noTransactions": "No transactions yet.",
     "all": "All",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "revert": "Revert",
+    "revertTransaction": "Revert Transaction",
+    "revertConfirm": "Do you really want to revert this transaction? A counter-entry will be created.",
+    "reverted": "Reverted"
   },
   "children": {
     "name": "Name",

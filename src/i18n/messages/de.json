@@ -119,7 +119,11 @@
     "noTransactions": "Noch keine Buchungen vorhanden.",
     "all": "Alle",
     "today": "Heute",
-    "yesterday": "Gestern"
+    "yesterday": "Gestern",
+    "revert": "Stornieren",
+    "revertTransaction": "Buchung stornieren",
+    "revertConfirm": "Möchtest du diese Buchung wirklich stornieren? Es wird eine Gegenbuchung erstellt.",
+    "reverted": "Storniert"
   },
   "children": {
     "name": "Name",

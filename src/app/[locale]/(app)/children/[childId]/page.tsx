@@ -176,6 +176,8 @@ export default async function ChildDetailPage({
             currency={currency}
             locale={locale}
             showFilter
+            childId={childId}
+            allowRevert
           />
         </div>
       </div>

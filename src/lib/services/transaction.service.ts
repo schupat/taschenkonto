@@ -15,7 +15,7 @@ export async function getTransactions(
   });
   if (!child) return [];
 
-  return prisma.transaction.findMany({
+  const transactions = await prisma.transaction.findMany({
     where: {
       childAccountId,
       ...(opts?.type ? { type: opts.type } : {}),
@@ -28,7 +28,29 @@ export async function getTransactions(
           cursor: { id: opts.cursor },
         }
       : {}),
+    select: {
+      id: true,
+      amountCents: true,
+      type: true,
+      origin: true,
+      description: true,
+      createdAt: true,
+      revertedTransactionId: true,
+    },
   });
+
+  // Batch-check which transactions have been reverted by another transaction
+  const txIds = transactions.map((tx) => tx.id);
+  const reverters = await prisma.transaction.findMany({
+    where: { revertedTransactionId: { in: txIds } },
+    select: { revertedTransactionId: true },
+  });
+  const revertedIds = new Set(reverters.map((r) => r.revertedTransactionId));
+
+  return transactions.map((tx) => ({
+    ...tx,
+    isReverted: revertedIds.has(tx.id),
+  }));
 }
 
 export async function createTransaction(
@@ -62,6 +84,50 @@ export async function createTransaction(
       description: data.description,
       childAccountId,
       createdByUserId: data.createdByUserId,
+    },
+  });
+}
+
+export async function revertTransaction(
+  transactionId: string,
+  childAccountId: string,
+  familyId: string,
+  userId: string
+) {
+  // Verify child belongs to family
+  const child = await prisma.childAccount.findFirst({
+    where: { id: childAccountId, familyId },
+    select: { id: true },
+  });
+  if (!child) throw new Error("Child not found");
+
+  // Find original transaction
+  const original = await prisma.transaction.findFirst({
+    where: { id: transactionId, childAccountId },
+  });
+  if (!original) throw new Error("Transaction not found");
+
+  // Reject if this transaction is itself a revert
+  if (original.revertedTransactionId) {
+    throw new Error("Cannot revert a revert transaction");
+  }
+
+  // Reject if already reverted (another tx points to this one)
+  const existingRevert = await prisma.transaction.findUnique({
+    where: { revertedTransactionId: transactionId },
+    select: { id: true },
+  });
+  if (existingRevert) throw new Error("Transaction already reverted");
+
+  return prisma.transaction.create({
+    data: {
+      amountCents: -original.amountCents,
+      type: "ADJUSTMENT",
+      origin: "MANUAL",
+      description: `Storno: ${original.description}`,
+      childAccountId,
+      createdByUserId: userId,
+      revertedTransactionId: transactionId,
     },
   });
 }

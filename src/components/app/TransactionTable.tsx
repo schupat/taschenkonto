@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { formatCents } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { Dialog } from "@/components/ui/Dialog";
+import { Button } from "@/components/ui/Button";
 
 interface Transaction {
   id: string;
@@ -11,6 +14,8 @@ interface Transaction {
   origin: string;
   description: string;
   createdAt: string;
+  revertedTransactionId?: string | null;
+  isReverted?: boolean;
 }
 
 const TYPE_CONFIG: Record<
@@ -128,14 +133,21 @@ export function TransactionTable({
   currency,
   locale,
   showFilter = false,
+  childId,
+  allowRevert = false,
 }: {
   transactions: Transaction[];
   currency: string;
   locale: string;
   showFilter?: boolean;
+  childId?: string;
+  allowRevert?: boolean;
 }) {
   const t = useTranslations();
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
+  const [revertingTx, setRevertingTx] = useState<Transaction | null>(null);
+  const [isReverting, setIsReverting] = useState(false);
 
   const filteredTransactions = activeFilter === "all"
     ? transactions
@@ -143,6 +155,26 @@ export function TransactionTable({
         const option = FILTER_OPTIONS.find((f) => f.key === activeFilter);
         return option ? option.types.includes(tx.type) : true;
       });
+
+  async function handleRevert() {
+    if (!revertingTx || !childId) return;
+    setIsReverting(true);
+    try {
+      const res = await fetch(
+        `/api/children/${childId}/transactions/${revertingTx.id}/revert`,
+        { method: "POST" }
+      );
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Error");
+        return;
+      }
+      router.refresh();
+    } finally {
+      setIsReverting(false);
+      setRevertingTx(null);
+    }
+  }
 
   if (transactions.length === 0) {
     return (
@@ -226,11 +258,16 @@ export function TransactionTable({
                 label: tx.type,
               };
               const isPositive = tx.amountCents >= 0;
+              const isReverted = tx.isReverted === true;
+              const isRevertEntry = !!tx.revertedTransactionId;
+              const canRevert = allowRevert && childId && !isReverted && !isRevertEntry;
 
               return (
                 <div
                   key={tx.id}
-                  className="group flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-accent-light/40"
+                  className={`group flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-accent-light/40 ${
+                    isReverted ? "opacity-50" : ""
+                  }`}
                   style={{
                     animationDelay: `${(gi * 5 + ti) * 30}ms`,
                   }}
@@ -242,11 +279,18 @@ export function TransactionTable({
                     {config.icon}
                   </div>
 
-                  {/* Description + type */}
+                  {/* Description + type + badge */}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-text-primary">
-                      {tx.description || t(config.label)}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="truncate font-medium text-text-primary">
+                        {tx.description || t(config.label)}
+                      </p>
+                      {isReverted && (
+                        <span className="shrink-0 rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-semibold text-warning">
+                          {t("transactions.reverted")}
+                        </span>
+                      )}
+                    </div>
                     <p className="mt-0.5 text-xs text-text-muted">
                       {t(config.label)}
                       <span className="mx-1.5 text-border">·</span>
@@ -268,12 +312,65 @@ export function TransactionTable({
                       {formatCents(tx.amountCents, currency, locale)}
                     </span>
                   </div>
+
+                  {/* Revert button */}
+                  {canRevert && (
+                    <button
+                      onClick={() => setRevertingTx(tx)}
+                      title={t("transactions.revert")}
+                      className="shrink-0 rounded-lg p-1.5 text-text-muted opacity-0 transition-all hover:bg-danger/10 hover:text-danger group-hover:opacity-100"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.5 8C2.5 5 5 2.5 8 2.5C11 2.5 13.5 5 13.5 8C13.5 11 11 13.5 8 13.5C6.2 13.5 4.6 12.6 3.6 11.3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                        <path d="M2.5 11.5V8H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  )}
                 </div>
               );
             })}
           </div>
         </div>
       ))}
+
+      {/* Revert confirmation dialog */}
+      <Dialog
+        open={!!revertingTx}
+        onClose={() => setRevertingTx(null)}
+        title={t("transactions.revertTransaction")}
+      >
+        {revertingTx && (
+          <div>
+            <div className="rounded-lg bg-bg-app p-3">
+              <p className="font-medium text-text-primary">
+                {revertingTx.description}
+              </p>
+              <p className="mt-1 text-sm text-text-muted">
+                {revertingTx.amountCents >= 0 ? "+" : ""}
+                {formatCents(revertingTx.amountCents, currency, locale)}
+              </p>
+            </div>
+            <p className="mt-3 text-sm text-text-secondary">
+              {t("transactions.revertConfirm")}
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => setRevertingTx(null)}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                variant="danger"
+                onClick={handleRevert}
+                disabled={isReverting}
+              >
+                {t("transactions.revert")}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Dialog>
     </div>
   );
 }
