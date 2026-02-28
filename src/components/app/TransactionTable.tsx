@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { formatCents } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -111,16 +112,37 @@ function RelativeDate({ dateStr, locale }: { dateStr: string; locale: string }) 
   );
 }
 
+type FilterKey = "all" | "DEPOSIT" | "WITHDRAWAL" | "ALLOWANCE" | "CHORE_REWARD" | "INVESTMENT";
+
+const FILTER_OPTIONS: { key: FilterKey; types: string[]; label: string; icon: string }[] = [
+  { key: "all", types: [], label: "transactions.all", icon: "" },
+  { key: "DEPOSIT", types: ["DEPOSIT"], label: "transactions.deposit", icon: "↓" },
+  { key: "WITHDRAWAL", types: ["WITHDRAWAL"], label: "transactions.withdrawal", icon: "↑" },
+  { key: "ALLOWANCE", types: ["ALLOWANCE"], label: "transactions.allowance", icon: "✦" },
+  { key: "CHORE_REWARD", types: ["CHORE_REWARD"], label: "transactions.choreReward", icon: "★" },
+  { key: "INVESTMENT", types: ["INVESTMENT_DEPOSIT", "INVESTMENT_WITHDRAWAL", "INTEREST"], label: "investments.title", icon: "🔒" },
+];
+
 export function TransactionTable({
   transactions,
   currency,
   locale,
+  showFilter = false,
 }: {
   transactions: Transaction[];
   currency: string;
   locale: string;
+  showFilter?: boolean;
 }) {
   const t = useTranslations();
+  const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
+
+  const filteredTransactions = activeFilter === "all"
+    ? transactions
+    : transactions.filter((tx) => {
+        const option = FILTER_OPTIONS.find((f) => f.key === activeFilter);
+        return option ? option.types.includes(tx.type) : true;
+      });
 
   if (transactions.length === 0) {
     return (
@@ -140,10 +162,44 @@ export function TransactionTable({
     );
   }
 
-  const groups = groupByDate(transactions, locale);
+  const groups = groupByDate(filteredTransactions, locale);
 
   return (
     <div className="divide-y divide-border/40">
+      {showFilter && (
+        <div className="flex flex-wrap gap-2 px-5 py-3">
+          {FILTER_OPTIONS.map((option) => {
+            const isActive = activeFilter === option.key;
+            const count = option.key === "all"
+              ? transactions.length
+              : transactions.filter((tx) => option.types.includes(tx.type)).length;
+            return (
+              <button
+                key={option.key}
+                onClick={() => setActiveFilter(option.key)}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  isActive
+                    ? "bg-accent text-white"
+                    : "bg-bg-app text-text-secondary hover:bg-border-light hover:text-text-primary"
+                }`}
+              >
+                {option.icon && <span>{option.icon}</span>}
+                {t(option.label)}
+                <span className={`tabular-nums ${isActive ? "text-white/70" : "text-text-muted"}`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {showFilter && filteredTransactions.length === 0 && transactions.length > 0 && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <p className="text-sm text-text-muted">
+            {t("transactions.noTransactions")}
+          </p>
+        </div>
+      )}
       {groups.map((group, gi) => (
         <div key={group.label}>
           {/* Date header */}

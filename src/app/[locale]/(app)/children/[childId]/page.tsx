@@ -175,6 +175,7 @@ export default async function ChildDetailPage({
             }))}
             currency={currency}
             locale={locale}
+            showFilter
           />
         </div>
       </div>
