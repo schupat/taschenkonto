@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireApiAuth } from "@/lib/auth-helpers";
 import {
   getSavingGoals,
   createSavingGoal,
@@ -17,10 +17,8 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ childId: string }> }
 ) {
-  const session = await auth();
-  if (!session?.familyId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { childId } = await params;
   const goals = await getSavingGoals(childId, session.familyId);
@@ -31,10 +29,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ childId: string }> }
 ) {
-  const session = await auth();
-  if (!session?.familyId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { childId } = await params;
   let body;

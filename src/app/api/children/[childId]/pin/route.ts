@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireApiAuth } from "@/lib/auth-helpers";
 import { changeChildPin } from "@/lib/services/child-account.service";
 import { changePinSchema } from "@/lib/validations/child-account";
 
@@ -7,10 +7,8 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ childId: string }> }
 ) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { childId } = await params;
   let body;

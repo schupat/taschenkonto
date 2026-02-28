@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireApiAuth } from "@/lib/auth-helpers";
 import {
   getInvestments,
   createInvestment,
@@ -11,10 +11,8 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ childId: string }> }
 ) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { childId } = await params;
   const investments = await getInvestments(childId, session.familyId);
@@ -25,10 +23,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ childId: string }> }
 ) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { childId } = await params;
   let body;

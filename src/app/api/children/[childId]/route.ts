@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireApiAuth } from "@/lib/auth-helpers";
 import {
   getChildWithSaldo,
   updateChildAccount,
@@ -11,10 +11,8 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ childId: string }> }
 ) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { childId } = await params;
   const child = await getChildWithSaldo(childId, session.familyId);
@@ -29,10 +27,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ childId: string }> }
 ) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { childId } = await params;
   let body;
@@ -62,10 +58,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ childId: string }> }
 ) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { childId } = await params;
   try {

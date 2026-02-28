@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireApiAuth } from "@/lib/auth-helpers";
 import { rejectWithdrawal } from "@/lib/services/investment.service";
 import { safeErrorMessage } from "@/lib/api-error";
 
@@ -7,10 +7,8 @@ export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ investmentId: string }> }
 ) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { investmentId } = await params;
 

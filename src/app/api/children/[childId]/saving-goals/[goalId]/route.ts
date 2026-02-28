@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireApiAuth } from "@/lib/auth-helpers";
 import { updateSavingGoal, deleteSavingGoal } from "@/lib/services/saving-goal.service";
 import { safeErrorMessage } from "@/lib/api-error";
 import { z } from "zod/v4";
@@ -14,10 +14,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ childId: string; goalId: string }> }
 ) {
-  const session = await auth();
-  if (!session?.familyId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { childId, goalId } = await params;
   let body;
@@ -44,10 +42,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ childId: string; goalId: string }> }
 ) {
-  const session = await auth();
-  if (!session?.familyId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { childId, goalId } = await params;
 

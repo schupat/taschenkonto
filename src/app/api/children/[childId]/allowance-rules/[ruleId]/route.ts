@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireApiAuth } from "@/lib/auth-helpers";
 import {
   updateAllowanceRule,
   deleteAllowanceRule,
@@ -10,10 +10,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ childId: string; ruleId: string }> }
 ) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { ruleId } = await params;
   let body;
@@ -43,10 +41,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ childId: string; ruleId: string }> }
 ) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { ruleId } = await params;
   try {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireApiAuth } from "@/lib/auth-helpers";
 import { updateChore, deleteChore } from "@/lib/services/chore.service";
 import { updateChoreSchema } from "@/lib/validations/chore";
 
@@ -7,8 +7,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ choreId: string }> }
 ) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { choreId } = await params;
   let body;
@@ -34,8 +34,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ choreId: string }> }
 ) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { choreId } = await params;
   try {

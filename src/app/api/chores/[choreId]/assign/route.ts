@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireApiAuth } from "@/lib/auth-helpers";
 import { assignChore } from "@/lib/services/chore.service";
 import { assignChoreSchema } from "@/lib/validations/chore";
 
@@ -7,8 +7,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ choreId: string }> }
 ) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { session, error } = await requireApiAuth();
+  if (error) return error;
 
   const { choreId } = await params;
   let body;
