@@ -178,6 +178,9 @@
     "description": "Beschreibung",
     "assignTo": "Zuweisen an",
     "assignHint": "Wähle ein oder mehrere Kinder (optional)",
+    "editChore": "Aufgabe bearbeiten",
+    "deleteChore": "Aufgabe löschen",
+    "deleteChoreConfirm": "Aufgabe wirklich löschen? Alle Zuweisungen werden entfernt.",
     "noChores": "Noch keine Aufgaben vorhanden."
   },
   "savingGoals": {

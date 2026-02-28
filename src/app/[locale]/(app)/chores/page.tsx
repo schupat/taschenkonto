@@ -5,6 +5,7 @@ import { getChildrenWithSaldo } from "@/lib/services/child-account.service";
 import { prisma } from "@/lib/prisma";
 import { formatCents } from "@/lib/utils";
 import { ChoreActions } from "./ChoreActions";
+import { ChoreCard } from "./ChoreCard";
 import { ApprovalButtons } from "./ApprovalButtons";
 
 export default async function ChoresPage({
@@ -96,36 +97,22 @@ export default async function ChoresPage({
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {chores.map((chore) => (
-              <div
+              <ChoreCard
                 key={chore.id}
-                className="card-hover rounded-xl border border-border/50 bg-bg-card p-5 shadow-sm"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-bold text-text-primary">{chore.title}</h3>
-                    {chore.description && (
-                      <p className="mt-1 text-sm text-text-secondary">
-                        {chore.description}
-                      </p>
-                    )}
-                  </div>
-                  <span className="rounded-full bg-success-light px-2.5 py-1 text-sm font-bold text-success">
-                    {formatCents(chore.rewardCents, currency, locale)}
-                  </span>
-                </div>
-                {chore.assignments.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {chore.assignments.map((a) => (
-                      <span
-                        key={a.id}
-                        className="rounded-full bg-accent-light px-2.5 py-0.5 text-xs font-medium text-accent"
-                      >
-                        {a.childAccount.avatarEmoji} {a.childAccount.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+                chore={{
+                  id: chore.id,
+                  title: chore.title,
+                  description: chore.description,
+                  rewardCents: chore.rewardCents,
+                  assignments: chore.assignments.map((a) => ({
+                    id: a.id,
+                    childAccount: a.childAccount,
+                  })),
+                }}
+                currency={currency}
+                locale={locale}
+                formatCents={formatCents}
+              />
             ))}
           </div>
         )}
