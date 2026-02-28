@@ -99,8 +99,11 @@ function RelativeDate({ dateStr, locale }: { dateStr: string; locale: string }) 
   const t = useTranslations("transactions");
   const d = new Date(dateStr);
   const now = new Date();
-  const diffDays = Math.floor(
-    (now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24)
+  // Compare calendar dates, not elapsed time
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const txDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diffDays = Math.round(
+    (today.getTime() - txDate.getTime()) / (1000 * 60 * 60 * 24)
   );
 
   if (diffDays === 0) return <>{t("today") || "Heute"}</>;
