@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
+import { formatCents } from "@/lib/utils";
 
 interface SavingGoalCardProps {
   goal: {
@@ -18,7 +19,6 @@ interface SavingGoalCardProps {
   saldoCents: number;
   currency: string;
   locale: string;
-  formatCents: (cents: number, currency: string, locale: string) => string;
 }
 
 export function SavingGoalCard({
@@ -27,7 +27,6 @@ export function SavingGoalCard({
   saldoCents,
   currency,
   locale,
-  formatCents,
 }: SavingGoalCardProps) {
   const t = useTranslations("savingGoals");
   const tc = useTranslations("common");

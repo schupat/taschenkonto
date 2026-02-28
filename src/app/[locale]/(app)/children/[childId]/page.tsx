@@ -102,7 +102,7 @@ export default async function ChildDetailPage({
                 saldoCents={child.saldoCents}
                 currency={currency}
                 locale={locale}
-                formatCents={formatCents}
+
               />
             ))}
           </div>

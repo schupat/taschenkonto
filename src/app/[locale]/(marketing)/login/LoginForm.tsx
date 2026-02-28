@@ -103,6 +103,23 @@ export default function LoginForm() {
           <p className="mt-6 text-center text-xs text-text-muted">
             {t("newUser")}
           </p>
+
+          {process.env.NODE_ENV !== "production" && (
+            <button
+              type="button"
+              onClick={async () => {
+                setLoading(true);
+                await signIn("credentials", {
+                  email: "demo@taschenkonto.app",
+                  password: "demo1234",
+                  callbackUrl: "/dashboard",
+                });
+              }}
+              className="mt-4 w-full rounded-lg border border-dashed border-border py-2 text-xs text-text-muted hover:bg-bg-app"
+            >
+              Dev: Login as demo@taschenkonto.app
+            </button>
+          )}
         </div>
       </div>
     </div>

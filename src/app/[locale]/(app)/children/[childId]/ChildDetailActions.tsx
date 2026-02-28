@@ -55,39 +55,46 @@ export function ChildDetailActions({
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <Button onClick={() => setShowAddTransaction(true)}>
-        {t("addTransaction")}
-      </Button>
-      <Button variant="secondary" onClick={() => setShowAddGoal(true)}>
-        {sg("addGoal")}
-      </Button>
-      <CreateInvestmentDialog
-        childId={childId}
-        currency={currency}
-        locale={locale}
-        saldoCents={saldoCents}
-      />
-      <AllowanceDialog
-        childId={childId}
-        currency={currency}
-        locale={locale}
-      />
-      <a
-        href={`/api/children/${childId}/transactions/export`}
-        className="inline-flex items-center rounded-lg border border-border bg-bg-card px-4 py-2 text-sm font-medium text-text-primary hover:bg-bg-app"
-      >
-        CSV ↓
-      </a>
-      <Button variant="secondary" onClick={() => setShowEditChild(true)}>
-        {cd("editChild")}
-      </Button>
-      <Button variant="secondary" onClick={() => setShowChangePin(true)}>
-        {cd("changePin")}
-      </Button>
-      <Button variant="danger" onClick={() => setShowDeleteConfirm(true)}>
-        {cd("deleteChild")}
-      </Button>
+    <div className="flex flex-col gap-3">
+      {/* Primary actions */}
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => setShowAddTransaction(true)}>
+          {t("addTransaction")}
+        </Button>
+        <Button variant="secondary" onClick={() => setShowAddGoal(true)}>
+          {sg("addGoal")}
+        </Button>
+        <CreateInvestmentDialog
+          childId={childId}
+          currency={currency}
+          locale={locale}
+          saldoCents={saldoCents}
+        />
+        <AllowanceDialog
+          childId={childId}
+          currency={currency}
+          locale={locale}
+        />
+      </div>
+      {/* Secondary actions */}
+      <div className="flex flex-wrap items-center gap-1">
+        <Button variant="ghost" className="text-xs" onClick={() => setShowEditChild(true)}>
+          {cd("editChild")}
+        </Button>
+        <Button variant="ghost" className="text-xs" onClick={() => setShowChangePin(true)}>
+          {cd("changePin")}
+        </Button>
+        <a
+          href={`/api/children/${childId}/transactions/export`}
+          className="rounded-lg px-4 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-app hover:text-text-primary"
+        >
+          CSV ↓
+        </a>
+        <span className="mx-1 hidden text-border sm:inline">|</span>
+        <Button variant="ghost" className="text-xs text-danger hover:text-danger" onClick={() => setShowDeleteConfirm(true)}>
+          {cd("deleteChild")}
+        </Button>
+      </div>
 
       <AddTransactionDialog
         open={showAddTransaction}
