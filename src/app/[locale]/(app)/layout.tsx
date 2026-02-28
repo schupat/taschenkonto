@@ -23,7 +23,7 @@ export default async function AppLayout({
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 px-3 pt-2">
-          <NavLink href="/dashboard" icon="📊" label="Dashboard" />
+          <NavLink href="/dashboard" icon="📊" label={t("dashboard.title")} />
           <NavLink href="/chores" icon="✅" label={t("chores.title")} />
         </nav>
 
@@ -35,7 +35,7 @@ export default async function AppLayout({
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">
-                {session?.user?.name || "Eltern"}
+                {session?.user?.name || t("common.parent")}
               </p>
               <p className="truncate text-xs text-white/50">
                 {session?.user?.email}
@@ -61,7 +61,7 @@ export default async function AppLayout({
               href="/dashboard"
               className="rounded-lg px-3 py-1 text-sm font-medium text-text-secondary hover:bg-bg-app"
             >
-              📊 Dashboard
+              📊 {t("dashboard.title")}
             </Link>
             <Link
               href="/chores"

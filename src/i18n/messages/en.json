@@ -10,7 +10,8 @@
     "back": "Back",
     "confirm": "Confirm",
     "search": "Search",
-    "noResults": "No results"
+    "noResults": "No results",
+    "parent": "Parent"
   },
   "marketing": {
     "badge": "Open Source & Free",
@@ -92,7 +93,13 @@
     "openKiosk": "Open Kiosk",
     "pendingApprovals": "Pending Approvals",
     "completedChore": "completed:",
-    "pendingWithdrawals": "Pending Withdrawals"
+    "pendingWithdrawals": "Pending Withdrawals",
+    "children": "Children",
+    "savingGoals": "Saving Goals",
+    "allowanceActive": "Allowance active",
+    "savingGoalCount": "{count} saving goal(s)",
+    "family": "Family",
+    "withdrawInvestment": "Withdraw {type}"
   },
   "transactions": {
     "title": "Transactions",
@@ -110,6 +117,7 @@
     "date": "Date",
     "addTransaction": "Add Transaction",
     "noTransactions": "No transactions yet.",
+    "all": "All",
     "today": "Today",
     "yesterday": "Yesterday"
   },
@@ -166,6 +174,8 @@
     "completed": "Completed",
     "approved": "Approved",
     "addChore": "Add Chore",
+    "choreTitle": "Title",
+    "description": "Description",
     "assignTo": "Assign to",
     "assignHint": "Select one or more children (optional)",
     "noChores": "No chores yet."
@@ -174,6 +184,8 @@
     "title": "Saving Goals",
     "target": "Target Amount",
     "progress": "{current} of {target}",
+    "goalTitle": "Title",
+    "targetDate": "Target Date",
     "addGoal": "Add Saving Goal"
   },
   "investments": {

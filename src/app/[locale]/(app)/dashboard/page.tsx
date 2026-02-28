@@ -50,7 +50,7 @@ export default async function DashboardPage({
             {t("title")}
           </h1>
           <p className="mt-1 text-text-secondary">
-            {family?.name || "Familie"}
+            {family?.name || t("family")}
           </p>
         </div>
         <div className="animate-fade-in-up stagger-1">
@@ -72,12 +72,12 @@ export default async function DashboardPage({
           accent="success"
         />
         <StatCard
-          label="Kinder"
+          label={t("children")}
           value={String(children.length)}
           accent="warning"
         />
         <StatCard
-          label="Sparziele"
+          label={t("savingGoals")}
           value={String(totalGoals)}
           accent="warning"
         />
@@ -141,7 +141,7 @@ export default async function DashboardPage({
                   </div>
                   <div>
                     <p className="font-semibold text-text-primary">
-                      {inv.childAccount.name}: {inv.type === "TAGESGELD" ? "Tagesgeld" : "Festgeld"} auszahlen
+                      {inv.childAccount.name}: {t("withdrawInvestment", { type: inv.type === "TAGESGELD" ? "Tagesgeld" : "Festgeld" })}
                     </p>
                     <p className="text-sm font-medium text-accent">
                       {formatCents(inv.currentBalanceCents, currency, locale)}

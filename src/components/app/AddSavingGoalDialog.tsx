@@ -58,7 +58,7 @@ export function AddSavingGoalDialog({ open, onClose, childId }: AddSavingGoalDia
           </div>
         )}
 
-        <Input id="title" name="title" label="Titel" required maxLength={100} />
+        <Input id="title" name="title" label={t("goalTitle")} required maxLength={100} />
 
         <Input
           id="target"
@@ -74,7 +74,7 @@ export function AddSavingGoalDialog({ open, onClose, childId }: AddSavingGoalDia
         <Input
           id="targetDate"
           name="targetDate"
-          label="Zieldatum"
+          label={t("targetDate")}
           type="date"
         />
 

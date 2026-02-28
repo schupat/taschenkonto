@@ -10,7 +10,8 @@
     "back": "Zurück",
     "confirm": "Bestätigen",
     "search": "Suchen",
-    "noResults": "Keine Ergebnisse"
+    "noResults": "Keine Ergebnisse",
+    "parent": "Eltern"
   },
   "marketing": {
     "badge": "Open Source & Kostenlos",
@@ -92,7 +93,13 @@
     "openKiosk": "Kiosk öffnen",
     "pendingApprovals": "Ausstehende Genehmigungen",
     "completedChore": "hat erledigt:",
-    "pendingWithdrawals": "Auszahlungsanfragen"
+    "pendingWithdrawals": "Auszahlungsanfragen",
+    "children": "Kinder",
+    "savingGoals": "Sparziele",
+    "allowanceActive": "Taschengeld aktiv",
+    "savingGoalCount": "{count} Sparziel(e)",
+    "family": "Familie",
+    "withdrawInvestment": "{type} auszahlen"
   },
   "transactions": {
     "title": "Buchungen",
@@ -110,6 +117,7 @@
     "date": "Datum",
     "addTransaction": "Buchung hinzufügen",
     "noTransactions": "Noch keine Buchungen vorhanden.",
+    "all": "Alle",
     "today": "Heute",
     "yesterday": "Gestern"
   },
@@ -166,6 +174,8 @@
     "completed": "Erledigt",
     "approved": "Genehmigt",
     "addChore": "Aufgabe hinzufügen",
+    "choreTitle": "Titel",
+    "description": "Beschreibung",
     "assignTo": "Zuweisen an",
     "assignHint": "Wähle ein oder mehrere Kinder (optional)",
     "noChores": "Noch keine Aufgaben vorhanden."
@@ -174,6 +184,8 @@
     "title": "Sparziele",
     "target": "Zielbetrag",
     "progress": "{current} von {target}",
+    "goalTitle": "Titel",
+    "targetDate": "Zieldatum",
     "addGoal": "Sparziel hinzufügen"
   },
   "investments": {

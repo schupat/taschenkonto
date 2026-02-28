@@ -65,12 +65,12 @@ export async function ChildCard({ child, currency, locale }: ChildCardProps) {
       <div className="mt-4 flex flex-wrap gap-1.5">
         {child.hasAllowanceRule && (
           <span className="rounded-full bg-success-light px-2 py-0.5 text-xs font-medium text-success">
-            Taschengeld aktiv
+            {t("allowanceActive")}
           </span>
         )}
         {child.savingGoals && child.savingGoals.length > 0 && (
           <span className="rounded-full bg-accent-light px-2 py-0.5 text-xs font-medium text-accent">
-            {child.savingGoals.length} Sparziel{child.savingGoals.length > 1 ? "e" : ""}
+            {t("savingGoalCount", { count: child.savingGoals.length })}
           </span>
         )}
       </div>

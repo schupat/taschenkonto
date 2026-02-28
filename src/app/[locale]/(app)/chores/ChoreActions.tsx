@@ -91,11 +91,11 @@ export function ChoreActions({ childAccounts }: ChoreActionsProps) {
             </div>
           )}
 
-          <Input id="title" name="title" label="Titel" required maxLength={100} />
+          <Input id="title" name="title" label={t("choreTitle")} required maxLength={100} />
 
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-text-secondary">
-              Beschreibung
+              {t("description")}
             </label>
             <textarea
               id="description"
