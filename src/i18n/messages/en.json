@@ -241,6 +241,14 @@
     "topUp": "Top Up",
     "topUpAmount": "Top-up Amount"
   },
+  "settings": {
+    "title": "Settings",
+    "familyName": "Family Name",
+    "currency": "Currency",
+    "kioskInvestments": "Kiosk Investments",
+    "kioskInvestmentsDesc": "Children can create investments from the kiosk",
+    "saved": "Settings saved"
+  },
   "kiosk": {
     "welcome": "Welcome to Taschenkonto",
     "enterPin": "Enter PIN",

@@ -25,6 +25,7 @@ export default async function AppLayout({
         <nav className="flex flex-1 flex-col gap-1 px-3 pt-2">
           <NavLink href="/dashboard" icon="📊" label={t("dashboard.title")} />
           <NavLink href="/chores" icon="✅" label={t("chores.title")} />
+          <NavLink href="/settings" icon="⚙️" label={t("settings.title")} />
         </nav>
 
         {/* User info */}
@@ -68,6 +69,12 @@ export default async function AppLayout({
               className="rounded-lg px-3 py-1 text-sm font-medium text-text-secondary hover:bg-bg-app"
             >
               ✅ {t("chores.title")}
+            </Link>
+            <Link
+              href="/settings"
+              className="rounded-lg px-3 py-1 text-sm font-medium text-text-secondary hover:bg-bg-app"
+            >
+              ⚙️ {t("settings.title")}
             </Link>
           </nav>
         </header>

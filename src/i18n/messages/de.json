@@ -241,6 +241,14 @@
     "topUp": "Nachzahlen",
     "topUpAmount": "Nachzahlungsbetrag"
   },
+  "settings": {
+    "title": "Einstellungen",
+    "familyName": "Familienname",
+    "currency": "Währung",
+    "kioskInvestments": "Kiosk-Anlagen",
+    "kioskInvestmentsDesc": "Kinder können im Kiosk selbst Anlagen erstellen",
+    "saved": "Einstellungen gespeichert"
+  },
   "kiosk": {
     "welcome": "Willkommen bei Taschenkonto",
     "enterPin": "PIN eingeben",

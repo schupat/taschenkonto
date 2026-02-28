@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod/v4";
 
 const updateFamilySettingsSchema = z.object({
+  name: z.string().min(1).max(50).optional(),
+  currency: z.enum(["EUR", "CHF", "USD", "GBP"]).optional(),
   kioskInvestmentsEnabled: z.boolean().optional(),
 });
 
@@ -15,7 +17,11 @@ export async function GET() {
 
   const family = await prisma.family.findUnique({
     where: { id: session.familyId },
-    select: { kioskInvestmentsEnabled: true },
+    select: {
+      name: true,
+      currency: true,
+      kioskInvestmentsEnabled: true,
+    },
   });
 
   return NextResponse.json(family);
@@ -47,6 +53,8 @@ export async function PATCH(req: NextRequest) {
   });
 
   return NextResponse.json({
+    name: family.name,
+    currency: family.currency,
     kioskInvestmentsEnabled: family.kioskInvestmentsEnabled,
   });
 }
