@@ -132,7 +132,8 @@
     "pinChanged": "PIN erfolgreich geändert",
     "deleteChild": "Kind entfernen",
     "deleteConfirmMessage": "Bist du sicher? Alle Daten (Buchungen, Sparziele, Anlagen) werden unwiderruflich gelöscht.",
-    "openInKiosk": "Im Kiosk anzeigen"
+    "openInKiosk": "Im Kiosk anzeigen",
+    "editChild": "Kind bearbeiten"
   },
   "allowance": {
     "title": "Taschengeld-Regeln",

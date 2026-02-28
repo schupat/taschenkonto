@@ -132,7 +132,8 @@
     "pinChanged": "PIN changed successfully",
     "deleteChild": "Remove Child",
     "deleteConfirmMessage": "Are you sure? All data (transactions, saving goals, investments) will be permanently deleted.",
-    "openInKiosk": "View in Kiosk"
+    "openInKiosk": "View in Kiosk",
+    "editChild": "Edit Child"
   },
   "allowance": {
     "title": "Allowance Rules",

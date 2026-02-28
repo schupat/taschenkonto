@@ -10,9 +10,12 @@ import { AddSavingGoalDialog } from "@/components/app/AddSavingGoalDialog";
 import { CreateInvestmentDialog } from "@/components/app/CreateInvestmentDialog";
 import { AllowanceDialog } from "@/components/app/AllowanceDialog";
 import { ChangePinDialog } from "@/components/app/ChangePinDialog";
+import { EditChildDialog } from "@/components/app/EditChildDialog";
 
 interface ChildDetailActionsProps {
   childId: string;
+  childName: string;
+  childEmoji: string;
   currency: string;
   locale: string;
   autoOpenTransaction?: boolean;
@@ -21,6 +24,8 @@ interface ChildDetailActionsProps {
 
 export function ChildDetailActions({
   childId,
+  childName,
+  childEmoji,
   currency,
   locale,
   autoOpenTransaction,
@@ -34,6 +39,7 @@ export function ChildDetailActions({
 
   const [showAddTransaction, setShowAddTransaction] = useState(autoOpenTransaction ?? false);
   const [showAddGoal, setShowAddGoal] = useState(false);
+  const [showEditChild, setShowEditChild] = useState(false);
   const [showChangePin, setShowChangePin] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -73,6 +79,9 @@ export function ChildDetailActions({
       >
         CSV ↓
       </a>
+      <Button variant="secondary" onClick={() => setShowEditChild(true)}>
+        {cd("editChild")}
+      </Button>
       <Button variant="secondary" onClick={() => setShowChangePin(true)}>
         {cd("changePin")}
       </Button>
@@ -89,6 +98,13 @@ export function ChildDetailActions({
         open={showAddGoal}
         onClose={() => setShowAddGoal(false)}
         childId={childId}
+      />
+      <EditChildDialog
+        open={showEditChild}
+        onClose={() => setShowEditChild(false)}
+        childId={childId}
+        currentName={childName}
+        currentEmoji={childEmoji}
       />
       <ChangePinDialog
         open={showChangePin}

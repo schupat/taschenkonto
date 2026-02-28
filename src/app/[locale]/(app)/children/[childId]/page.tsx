@@ -78,7 +78,7 @@ export default async function ChildDetailPage({
               </a>
             </div>
           </div>
-          <ChildDetailActions childId={childId} currency={currency} locale={locale} autoOpenTransaction={autoOpenTransaction} saldoCents={child.saldoCents} />
+          <ChildDetailActions childId={childId} childName={child.name} childEmoji={child.avatarEmoji} currency={currency} locale={locale} autoOpenTransaction={autoOpenTransaction} saldoCents={child.saldoCents} />
         </div>
       </div>
 
