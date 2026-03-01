@@ -44,9 +44,27 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme]);
 
   function setTheme(t: Theme) {
-    localStorage.setItem(STORAGE_KEY, t);
-    // Trigger useSyncExternalStore by dispatching a storage event
-    window.dispatchEvent(new StorageEvent("storage", { key: STORAGE_KEY }));
+    const commit = () => {
+      localStorage.setItem(STORAGE_KEY, t);
+      window.dispatchEvent(new StorageEvent("storage", { key: STORAGE_KEY }));
+    };
+
+    // Sweep animation via View Transitions API
+    if (!document.startViewTransition) {
+      commit();
+      return;
+    }
+
+    const btn = document.querySelector<HTMLElement>("[data-theme-toggle]");
+    if (btn) {
+      const rect = btn.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      document.documentElement.style.setProperty("--sweep-x", `${x}px`);
+      document.documentElement.style.setProperty("--sweep-y", `${y}px`);
+    }
+
+    document.startViewTransition(commit);
   }
 
   return (
