@@ -123,6 +123,26 @@ Central Tailwind config with tokens:
 5. **Document Results**: Add review section to `tasks/todo.md`
 6. **Capture Lessons**: Update `tasks/lessons.md` after corrections
 
+## Security
+
+- After making changes to template files (HTML/Jinja), always check for inline event handlers (onclick, onsubmit, etc.) that would violate Content Security Policy. Run a grep for common inline handlers before committing.
+
+## Common Pitfalls
+
+- When passing functions or methods as props between server and client components, ensure they are serializable. Never pass raw functions as props to client components — use server actions or API endpoints instead.
+
+## Git Operations
+
+- When asked to remove or untrack files from git, complete the full removal process in one pass: `git rm --cached`, update `.gitignore`, and commit. Do not require the user to ask again.
+
+## Testing & Verification
+
+- Always run `npm run build` (or the project's build command) after making multi-file template or component changes to catch compilation errors and regressions before committing.
+
+## Database
+
+- Before attempting Prisma schema changes or ORM migrations, verify the feature is supported in the project's current Prisma version. Check docs or release notes first.
+
 ## Core Principles
 
 - **Simplicity First**: Make every change as simple as possible. Impact minimal code.
