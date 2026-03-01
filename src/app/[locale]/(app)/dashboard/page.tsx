@@ -9,6 +9,7 @@ import { ChildCard } from "@/components/app/ChildCard";
 import { ApprovalButtons } from "../chores/ApprovalButtons";
 import { WithdrawalApprovalButtons } from "@/components/app/WithdrawalApprovalButtons";
 import { DashboardActions } from "./DashboardActions";
+import { SetupWizard } from "@/components/app/SetupWizard";
 
 export default async function DashboardPage({
   params,
@@ -41,8 +42,17 @@ export default async function DashboardPage({
   const pendingApprovals = await getPendingApprovals(session.familyId);
   const pendingWithdrawals = await getPendingWithdrawals(session.familyId);
 
+  const needsSetup = !family?.setupCompleted && children.length === 0;
+
   return (
     <div>
+      {needsSetup && (
+        <SetupWizard
+          open
+          familyName={family?.name || ""}
+          currency={currency}
+        />
+      )}
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="animate-fade-in-up">
@@ -218,7 +228,7 @@ function StatCard({
   return (
     <div
       // eslint-disable-next-line security/detect-object-injection
-      className={`stat-card ${colors[accent]} rounded-xl border border-border/50 bg-bg-card p-5 shadow-sm`}
+      className={`stat-card ${colors[accent]} rounded-xl border border-border/50 p-5 shadow-sm`}
     >
       <p className="text-sm font-medium text-text-secondary">{label}</p>
       <p

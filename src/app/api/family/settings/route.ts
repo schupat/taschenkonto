@@ -7,6 +7,7 @@ const updateFamilySettingsSchema = z.object({
   name: z.string().min(1).max(50).optional(),
   currency: z.enum(["EUR", "CHF", "USD", "GBP"]).optional(),
   kioskInvestmentsEnabled: z.boolean().optional(),
+  setupCompleted: z.boolean().optional(),
 });
 
 export async function GET() {
@@ -19,6 +20,7 @@ export async function GET() {
       name: true,
       currency: true,
       kioskInvestmentsEnabled: true,
+      setupCompleted: true,
     },
   });
 
@@ -52,5 +54,6 @@ export async function PATCH(req: NextRequest) {
     name: family.name,
     currency: family.currency,
     kioskInvestmentsEnabled: family.kioskInvestmentsEnabled,
+    setupCompleted: family.setupCompleted,
   });
 }

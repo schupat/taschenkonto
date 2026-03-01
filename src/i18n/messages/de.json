@@ -258,6 +258,23 @@
     "kioskInvestmentsDesc": "Kinder können im Kiosk selbst Anlagen erstellen",
     "saved": "Einstellungen gespeichert"
   },
+  "setup": {
+    "title": "Willkommen bei Taschenkonto!",
+    "subtitle": "Richte deine Familie in wenigen Schritten ein.",
+    "step1Title": "Familie",
+    "step2Title": "Kinder",
+    "familyNameLabel": "Familienname",
+    "familyNamePlaceholder": "z.B. Familie Müller",
+    "currencyLabel": "Währung",
+    "addChildPrompt": "Füge dein erstes Kind hinzu.",
+    "childAdded": "{name} hinzugefügt!",
+    "addAnotherChild": "Weiteres Kind hinzufügen",
+    "next": "Weiter",
+    "back": "Zurück",
+    "finish": "Fertig",
+    "skip": "Überspringen",
+    "stepOf": "Schritt {current} von {total}"
+  },
   "kiosk": {
     "welcome": "Willkommen bei Taschenkonto",
     "enterPin": "PIN eingeben",

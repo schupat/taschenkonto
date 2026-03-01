@@ -28,6 +28,7 @@ async function main() {
       name: "Familie Muster",
       currency: "EUR",
       timezone: "Europe/Berlin",
+      setupCompleted: true,
     },
   });
 

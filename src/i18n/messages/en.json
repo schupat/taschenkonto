@@ -258,6 +258,23 @@
     "kioskInvestmentsDesc": "Children can create investments from the kiosk",
     "saved": "Settings saved"
   },
+  "setup": {
+    "title": "Welcome to Taschenkonto!",
+    "subtitle": "Set up your family in a few easy steps.",
+    "step1Title": "Family",
+    "step2Title": "Children",
+    "familyNameLabel": "Family Name",
+    "familyNamePlaceholder": "e.g. The Smiths",
+    "currencyLabel": "Currency",
+    "addChildPrompt": "Add your first child.",
+    "childAdded": "{name} added!",
+    "addAnotherChild": "Add another child",
+    "next": "Next",
+    "back": "Back",
+    "finish": "Done",
+    "skip": "Skip",
+    "stepOf": "Step {current} of {total}"
+  },
   "kiosk": {
     "welcome": "Welcome to Taschenkonto",
     "enterPin": "Enter PIN",

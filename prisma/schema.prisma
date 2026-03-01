@@ -113,6 +113,7 @@ model Family {
   currency                String         @default("EUR")
   timezone                String         @default("Europe/Berlin")
   kioskInvestmentsEnabled Boolean        @default(false)
+  setupCompleted          Boolean        @default(false)
   children                ChildAccount[]
   parents                 User[]
   chores                  Chore[]
