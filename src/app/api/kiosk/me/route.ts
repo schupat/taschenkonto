@@ -18,7 +18,10 @@ export async function GET() {
       savingGoals: true,
       choreAssignments: {
         where: {
-          completion: null,
+          OR: [
+            { completion: null },
+            { completion: { status: "REJECTED" } },
+          ],
         },
         include: {
           chore: { select: { title: true, rewardCents: true } },

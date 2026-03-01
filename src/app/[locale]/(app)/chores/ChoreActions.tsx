@@ -118,6 +118,23 @@ export function ChoreActions({ childAccounts }: ChoreActionsProps) {
           />
 
           <div>
+            <label htmlFor="recurrence" className="block text-sm font-medium text-text-secondary">
+              {t("recurrence")}
+            </label>
+            <select
+              id="recurrence"
+              name="recurrence"
+              defaultValue="ONE_TIME"
+              className="mt-1 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-text-primary outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+            >
+              <option value="ONE_TIME">{t("oneTime")}</option>
+              <option value="DAILY">{t("daily")}</option>
+              <option value="WEEKLY">{t("weekly")}</option>
+              <option value="MONTHLY">{t("monthly")}</option>
+            </select>
+          </div>
+
+          <div>
             <span className="block text-sm font-medium text-text-secondary">
               {t("assignTo")}
             </span>

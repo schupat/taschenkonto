@@ -186,7 +186,12 @@
     "editChore": "Aufgabe bearbeiten",
     "deleteChore": "Aufgabe löschen",
     "deleteChoreConfirm": "Aufgabe wirklich löschen? Alle Zuweisungen werden entfernt.",
-    "noChores": "Noch keine Aufgaben vorhanden."
+    "noChores": "Noch keine Aufgaben vorhanden.",
+    "recurrence": "Wiederholung",
+    "oneTime": "Einmalig",
+    "daily": "Täglich",
+    "weekly": "Wöchentlich",
+    "monthly": "Monatlich"
   },
   "savingGoals": {
     "title": "Sparziele",

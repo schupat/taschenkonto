@@ -81,6 +81,15 @@ export async function markChoreCompleted(
     include: { completion: true },
   });
   if (!assignment) throw new Error("Assignment not found");
+
+  // If previously rejected, reset to PENDING so child can retry
+  if (assignment.completion && assignment.completion.status === "REJECTED") {
+    return prisma.choreCompletion.update({
+      where: { id: assignment.completion.id },
+      data: { status: "PENDING", completedAt: new Date() },
+    });
+  }
+
   if (assignment.completion) throw new Error("Already completed");
 
   return prisma.choreCompletion.create({
@@ -115,22 +124,37 @@ export async function approveChore(completionId: string, familyId: string) {
     throw new Error("Already processed");
   }
 
-  const [updatedCompletion, transaction] = await prisma.$transaction([
-    prisma.choreCompletion.update({
-      where: { id: completionId },
-      data: { status: "APPROVED", approvedAt: new Date() },
-    }),
-    prisma.transaction.create({
-      data: {
-        amountCents: completion.assignment.chore.rewardCents,
-        type: "CHORE_REWARD",
-        origin: "CHORE_COMPLETION",
-        description: completion.assignment.chore.title,
-        childAccountId: completion.assignment.childAccount.id,
-        choreCompletionId: completionId,
-      },
-    }),
-  ]);
+  const approveOp = prisma.choreCompletion.update({
+    where: { id: completionId },
+    data: { status: "APPROVED", approvedAt: new Date() },
+  });
+  const rewardOp = prisma.transaction.create({
+    data: {
+      amountCents: completion.assignment.chore.rewardCents,
+      type: "CHORE_REWARD",
+      origin: "CHORE_COMPLETION",
+      description: completion.assignment.chore.title,
+      childAccountId: completion.assignment.childAccount.id,
+      choreCompletionId: completionId,
+    },
+  });
+
+  // Auto-regenerate assignment for recurring chores
+  if (completion.assignment.chore.recurrence !== "ONE_TIME") {
+    const [updatedCompletion, transaction] = await prisma.$transaction([
+      approveOp,
+      rewardOp,
+      prisma.choreAssignment.create({
+        data: {
+          choreId: completion.assignment.chore.id,
+          childAccountId: completion.assignment.childAccount.id,
+        },
+      }),
+    ]);
+    return { completion: updatedCompletion, transaction };
+  }
+
+  const [updatedCompletion, transaction] = await prisma.$transaction([approveOp, rewardOp]);
 
   return { completion: updatedCompletion, transaction };
 }

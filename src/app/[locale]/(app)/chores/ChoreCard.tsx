@@ -23,9 +23,11 @@ interface ChoreCardProps {
   };
   currency: string;
   locale: string;
+  completed?: boolean;
+  recurrence?: string;
 }
 
-export function ChoreCard({ chore, currency, locale }: ChoreCardProps) {
+export function ChoreCard({ chore, currency, locale, completed, recurrence }: ChoreCardProps) {
   const t = useTranslations("chores");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -76,10 +78,13 @@ export function ChoreCard({ chore, currency, locale }: ChoreCardProps) {
 
   return (
     <>
-      <div className="card-hover rounded-xl border border-border/50 bg-bg-card p-5 shadow-sm">
+      <div className={`card-hover rounded-xl border border-border/50 bg-bg-card p-5 shadow-sm${completed ? " opacity-50" : ""}`}>
         <div className="flex items-start justify-between">
           <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-text-primary">{chore.title}</h3>
+            <h3 className="font-bold text-text-primary">
+              {completed && <span className="mr-1.5 text-success">&#10003;</span>}
+              {chore.title}
+            </h3>
             {chore.description && (
               <p className="mt-1 text-sm text-text-secondary">
                 {chore.description}
@@ -87,6 +92,11 @@ export function ChoreCard({ chore, currency, locale }: ChoreCardProps) {
             )}
           </div>
           <div className="ml-3 flex items-center gap-2">
+            {recurrence && recurrence !== "ONE_TIME" && (
+              <span className="rounded-full bg-accent-light px-2.5 py-1 text-xs font-medium text-accent">
+                {t(recurrence === "DAILY" ? "daily" : recurrence === "WEEKLY" ? "weekly" : "monthly")}
+              </span>
+            )}
             <span className="rounded-full bg-success-light px-2.5 py-1 text-sm font-bold text-success">
               {formatCents(chore.rewardCents, currency, locale)}
             </span>

@@ -186,7 +186,12 @@
     "editChore": "Edit Chore",
     "deleteChore": "Delete Chore",
     "deleteChoreConfirm": "Really delete this chore? All assignments will be removed.",
-    "noChores": "No chores yet."
+    "noChores": "No chores yet.",
+    "recurrence": "Recurrence",
+    "oneTime": "One-time",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly"
   },
   "savingGoals": {
     "title": "Saving Goals",

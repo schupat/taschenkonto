@@ -26,6 +26,23 @@ export default async function ChoresPage({
 
   const currency = family?.currency || "EUR";
 
+  // ONE_TIME chore is "fully completed" when every assignment has an APPROVED completion
+  function isChoreFullyCompleted(chore: (typeof chores)[number]) {
+    if (chore.recurrence !== "ONE_TIME") return false;
+    if (chore.assignments.length === 0) return false;
+    return chore.assignments.every(
+      (a) => a.completion?.status === "APPROVED"
+    );
+  }
+
+  // Sort: completed one-time chores go to the bottom
+  const sortedChores = [...chores].sort((a, b) => {
+    const aCompleted = isChoreFullyCompleted(a);
+    const bCompleted = isChoreFullyCompleted(b);
+    if (aCompleted !== bCompleted) return aCompleted ? 1 : -1;
+    return 0;
+  });
+
   return (
     <div>
       {/* Header */}
@@ -96,7 +113,7 @@ export default async function ChoresPage({
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
-            {chores.map((chore) => (
+            {sortedChores.map((chore) => (
               <ChoreCard
                 key={chore.id}
                 chore={{
@@ -111,6 +128,8 @@ export default async function ChoresPage({
                 }}
                 currency={currency}
                 locale={locale}
+                completed={isChoreFullyCompleted(chore)}
+                recurrence={chore.recurrence}
               />
             ))}
           </div>
