@@ -5,6 +5,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 // VULN-09 fix: Security headers
 const nextConfig: NextConfig = {
+  output: "standalone",
   async headers() {
     return [
       {

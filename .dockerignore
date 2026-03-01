@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+docker
+docker-compose.yml
+Dockerfile
+*.md
+tasks/
+.claude/
+.husky/
+data/

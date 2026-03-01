@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "build": "node -e \"if(!process.env.VERCEL&&process.env.DATABASE_URL?.startsWith('postgres')){const{execFileSync}=require('child_process');execFileSync('npx',['prisma','migrate','deploy'],{stdio:'inherit'})}\" && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "audit": "npm audit --audit-level=high",

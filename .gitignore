@@ -34,9 +34,6 @@ yarn-error.log*
 .env*
 !.env.example
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -46,3 +43,6 @@ next-env.d.ts
 # sqlite
 prisma/dev.db
 prisma/dev.db-journal
+
+# docker bind-mount data
+/data/

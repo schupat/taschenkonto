@@ -1,0 +1,8 @@
+# Investments interest — daily at 2:00 AM
+0 2 * * * curl -sf -X POST -H "Authorization: Bearer CRON_SECRET_PLACEHOLDER" http://app:3000/api/cron/investments >> /proc/1/fd/1 2>&1
+
+# Allowances — daily at 6:00 AM
+0 6 * * * curl -sf -X POST -H "Authorization: Bearer CRON_SECRET_PLACEHOLDER" http://app:3000/api/cron/allowance >> /proc/1/fd/1 2>&1
+
+# Database backup — daily at 3:00 AM, keep 7 days
+0 3 * * * PGPASSWORD="PGPASSWORD_PLACEHOLDER" pg_dump -h db -U taschenkonto taschenkonto | gzip > /backups/taschenkonto-$(date +\%Y\%m\%d-\%H\%M\%S).sql.gz && find /backups -name "*.sql.gz" -mtime +7 -delete >> /proc/1/fd/1 2>&1

@@ -45,7 +45,7 @@ npm install
 ### 2. Datenbank starten
 
 ```bash
-docker compose up -d
+docker compose up db -d
 ```
 
 Startet PostgreSQL 17 auf `localhost:5432` (User/Pass/DB: `taschenkonto`).
@@ -110,47 +110,63 @@ openssl rand -base64 32
 AUTH_SECRET="dein-generierter-secret"
 ```
 
-## Vercel-Deployment
+## Docker-Deployment
 
-### Umgebungsvariablen setzen
+### 1. Server vorbereiten
 
-In den Vercel-Projekteinstellungen unter **Settings → Environment Variables**:
+Voraussetzungen auf dem VPS: Docker und Docker Compose.
+
+### 2. Umgebungsvariablen
+
+```bash
+cp .env.example .env
+```
+
+Mindestens diese Werte anpassen:
 
 | Variable | Beschreibung | Pflicht |
 |----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL-Connection-String | ✅ |
 | `AUTH_SECRET` | `openssl rand -base64 32` | ✅ |
-| `AUTH_TRUST_HOST` | `true` | ✅ |
-| `AUTH_RESEND_KEY` | Resend-API-Key | ✅ |
-| `AUTH_EMAIL_FROM` | Absenderadresse | Optional |
 | `KIOSK_SESSION_SECRET` | `openssl rand -base64 32` | ✅ |
-| `CRON_SECRET` | Beliebiger Secret-String | ✅ |
+| `CRON_SECRET` | `openssl rand -base64 32` | ✅ |
+| `POSTGRES_PASSWORD` | Datenbank-Passwort (Standard: `taschenkonto`) | ✅ |
+| `AUTH_RESEND_KEY` | Resend-API-Key für Magic Links | ✅ |
+| `AUTH_EMAIL_FROM` | Absenderadresse | Optional |
+| `APP_PORT` | Host-Port (Standard: `3000`) | Optional |
 
-### PostgreSQL-Anbieter
+### 3. Starten
 
-- [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres)
-- [Neon](https://neon.tech) (kostenloser Tier)
-- [Supabase](https://supabase.com) (kostenloser Tier)
-
-### Cron-Job (Taschengeld)
-
-Taschengeld-Regeln werden über einen HTTP-Endpunkt ausgeführt. Richte einen täglichen Cron ein:
-
-```
-GET /api/cron/allowance
-Header: x-cron-secret: <CRON_SECRET>
+```bash
+docker compose up --build -d
 ```
 
-Auf Vercel: [Vercel Cron Jobs](https://vercel.com/docs/cron-jobs) in `vercel.json`:
+Startet drei Container:
 
-```json
-{
-  "crons": [{
-    "path": "/api/cron/allowance",
-    "schedule": "0 6 * * *"
-  }]
-}
+- **db** — PostgreSQL 17
+- **app** — Next.js (führt Migrationen beim Start automatisch aus)
+- **cron** — Taschengeld (6:00 Uhr) + Zinsen (2:00 Uhr) + DB-Backup (3:00 Uhr), Zeitzone Europe/Berlin
+
+### 4. Reverse Proxy
+
+Die App lauscht auf `APP_PORT` (Standard 3000). Einen Reverse Proxy (z.B. Cloudflare Tunnel, Caddy, nginx) davor setzen für HTTPS.
+
+### 5. Backups
+
+Tägliche PostgreSQL-Backups landen in `./data/backups/` (7 Tage Rotation). Wiederherstellen:
+
+```bash
+gunzip -c ./data/backups/taschenkonto-YYYYMMDD-HHMMSS.sql.gz | \
+  docker compose exec -T db psql -U taschenkonto taschenkonto
 ```
+
+### 6. Update
+
+```bash
+git pull
+docker compose up --build -d
+```
+
+Der App-Container führt ausstehende Migrationen beim Neustart automatisch aus.
 
 ## Kiosk-Modus
 
