@@ -3,6 +3,10 @@
 # Internal task notes
 /tasks
 
+# Claude Code internal
+/.claude
+/CLAUDE.md
+
 # dependencies
 /node_modules
 /.pnp
