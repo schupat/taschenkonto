@@ -27,94 +27,19 @@ Open-Source-Familienbankingapp: Eltern verwalten virtuelle „Bankkonten" für K
 | i18n | next-intl v4 (de/en) |
 | Validierung | Zod v4 |
 
-## Schnellstart
+## Self-Hosting (Docker)
 
 ### Voraussetzungen
 
-- Node.js ≥ 18
-- Docker (für PostgreSQL)
+- Server mit Docker und Docker Compose
+- Einen [Resend](https://resend.com)-Account für Magic-Link-E-Mails (kostenloser Plan reicht)
 
 ### 1. Repo klonen
 
 ```bash
 git clone https://github.com/schupat/taschenkonto.git
 cd taschenkonto
-npm install
 ```
-
-### 2. Datenbank starten
-
-```bash
-docker compose up db -d
-```
-
-Startet PostgreSQL 17 auf `localhost:5432` (User/Pass/DB: `taschenkonto`).
-
-### 3. Umgebungsvariablen
-
-```bash
-cp .env.example .env.local
-```
-
-Die Standardwerte in `.env.example` funktionieren sofort für lokale Entwicklung. Für Magic-Link-E-Mails brauchst du einen Resend-API-Key (siehe [Magic-Link-Setup](#magic-link-einrichten)).
-
-### 4. Datenbank migrieren & seeden
-
-```bash
-npx prisma migrate dev
-npx prisma db seed
-```
-
-Seed erstellt eine Demo-Familie:
-- **Eltern-Login:** `demo@taschenkonto.app` (Magic Link)
-- **Kind Lena:** PIN `1234` (Kontostand 12,50 €)
-- **Kind Max:** PIN `5678` (Kontostand 5,00 €)
-
-### 5. Dev-Server starten
-
-```bash
-npm run dev
-```
-
-Öffne [http://localhost:3000](http://localhost:3000).
-
-## Magic-Link einrichten
-
-Taschenkonto nutzt [Resend](https://resend.com) für Magic-Link-E-Mails. Ohne API-Key funktioniert das Login nicht (es wird keine E-Mail versendet).
-
-### Schritte
-
-1. Erstelle einen kostenlosen Account auf [resend.com](https://resend.com)
-2. Gehe zu **API Keys** → neuen Key erstellen
-3. Trage den Key in `.env.local` ein:
-
-```env
-AUTH_RESEND_KEY="re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-```
-
-4. **Absenderadresse** (optional):
-   - Zum Testen: Resend stellt `onboarding@resend.dev` bereit (Standard)
-   - Für Produktion: Eigene Domain in Resend verifizieren und eintragen:
-
-```env
-AUTH_EMAIL_FROM="Taschenkonto <noreply@deinedomain.de>"
-```
-
-5. **Auth-Secret** generieren (Produktion):
-
-```bash
-openssl rand -base64 32
-```
-
-```env
-AUTH_SECRET="dein-generierter-secret"
-```
-
-## Docker-Deployment
-
-### 1. Server vorbereiten
-
-Voraussetzungen auf dem VPS: Docker und Docker Compose.
 
 ### 2. Umgebungsvariablen
 
@@ -131,7 +56,7 @@ Mindestens diese Werte anpassen:
 | `CRON_SECRET` | `openssl rand -base64 32` | ✅ |
 | `POSTGRES_PASSWORD` | Datenbank-Passwort (Standard: `taschenkonto`) | ✅ |
 | `AUTH_RESEND_KEY` | Resend-API-Key für Magic Links | ✅ |
-| `AUTH_EMAIL_FROM` | Absenderadresse | Optional |
+| `AUTH_EMAIL_FROM` | Absenderadresse (z.B. `Taschenkonto <noreply@deinedomain.de>`) | Optional |
 | `APP_PORT` | Host-Port (Standard: `3000`) | Optional |
 
 ### 3. Starten
@@ -143,7 +68,7 @@ docker compose up --build -d
 Startet drei Container:
 
 - **db** — PostgreSQL 17
-- **app** — Next.js (führt Migrationen beim Start automatisch aus)
+- **app** — Next.js (führt Datenbankmigrationen beim Start automatisch aus)
 - **cron** — Taschengeld (6:00 Uhr) + Zinsen (2:00 Uhr) + DB-Backup (3:00 Uhr), Zeitzone Europe/Berlin
 
 ### 4. Reverse Proxy
@@ -167,6 +92,87 @@ docker compose up --build -d
 ```
 
 Der App-Container führt ausstehende Migrationen beim Neustart automatisch aus.
+
+## Magic-Link einrichten
+
+Taschenkonto nutzt [Resend](https://resend.com) für Magic-Link-E-Mails.
+
+1. Kostenlosen Account auf [resend.com](https://resend.com) erstellen
+2. **API Keys** → neuen Key erstellen
+3. Key in `.env` eintragen:
+
+```env
+AUTH_RESEND_KEY="re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+4. **Absenderadresse:**
+   - Zum Testen: Resend stellt `onboarding@resend.dev` bereit (Standard)
+   - Für Produktion: Eigene Domain in Resend verifizieren, dann:
+
+```env
+AUTH_EMAIL_FROM="Taschenkonto <noreply@deinedomain.de>"
+```
+
+## Lokale Entwicklung
+
+### Voraussetzungen
+
+- Node.js ≥ 18
+- Docker (für PostgreSQL)
+
+### 1. Repo klonen & Abhängigkeiten installieren
+
+```bash
+git clone https://github.com/schupat/taschenkonto.git
+cd taschenkonto
+npm install
+```
+
+### 2. Datenbank starten
+
+In `docker-compose.yml` den auskommentierten Port-Block einkommentieren, damit Prisma die DB lokal erreicht:
+
+```yaml
+ports:
+  - "5432:5432"
+```
+
+Dann:
+
+```bash
+docker compose up db -d
+```
+
+Startet PostgreSQL 17 auf `localhost:5432`.
+
+### 3. Umgebungsvariablen
+
+```bash
+cp .env.example .env.local   # für Next.js
+cp .env.example .env         # für Prisma CLI
+```
+
+> Die Standardwerte in `.env.example` funktionieren sofort für lokale Entwicklung. Für Magic-Link-E-Mails brauchst du einen Resend-API-Key (siehe [Magic-Link einrichten](#magic-link-einrichten)).
+
+### 4. Datenbank migrieren & seeden
+
+```bash
+npx prisma migrate dev
+npx prisma db seed
+```
+
+Seed erstellt eine Demo-Familie:
+- **Eltern-Login:** `demo@taschenkonto.app` (Magic Link)
+- **Kind Lena:** PIN `1234` (Kontostand 12,50 €)
+- **Kind Max:** PIN `5678` (Kontostand 5,00 €)
+
+### 5. Dev-Server starten
+
+```bash
+npm run dev
+```
+
+Öffne [http://localhost:3000](http://localhost:3000).
 
 ## Kiosk-Modus
 
