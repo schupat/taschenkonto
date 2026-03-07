@@ -2,17 +2,21 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
-// VULN-01 fix: Fail loud if secret is missing in production
-const KIOSK_SECRET = process.env.KIOSK_SESSION_SECRET;
-if (!KIOSK_SECRET && process.env.NODE_ENV === "production") {
-  throw new Error(
-    "KIOSK_SESSION_SECRET is required in production. Generate with: openssl rand -base64 32"
+const COOKIE_NAME = "kiosk-session";
+
+// VULN-01 fix: Fail loud if secret is missing in production.
+// Lazy-initialized so the check runs at request time, not at build time.
+function getSecret(): Uint8Array {
+  const KIOSK_SECRET = process.env.KIOSK_SESSION_SECRET;
+  if (!KIOSK_SECRET && process.env.NODE_ENV === "production") {
+    throw new Error(
+      "KIOSK_SESSION_SECRET is required in production. Generate with: openssl rand -base64 32"
+    );
+  }
+  return new TextEncoder().encode(
+    KIOSK_SECRET || "dev-only-insecure-key-do-not-use-in-prod"
   );
 }
-const secret = new TextEncoder().encode(
-  KIOSK_SECRET || "dev-only-insecure-key-do-not-use-in-prod"
-);
-const COOKIE_NAME = "kiosk-session";
 
 export async function createKioskSession(
   childAccountId: string,
@@ -22,7 +26,7 @@ export async function createKioskSession(
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("8h")
-    .sign(secret);
+    .sign(getSecret());
 
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, token, {
@@ -40,7 +44,7 @@ export async function getKioskSession() {
   if (!token) return null;
 
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, getSecret());
     const session = payload as { childAccountId: string; familyId: string; iat?: number };
 
     // Reject tokens issued before the most recent PIN change
