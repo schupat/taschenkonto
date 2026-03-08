@@ -36,7 +36,7 @@ export async function getChildWithSaldo(childId: string, familyId: string) {
 
   if (!child) return null;
 
-  const { hashedPin, transactions, ...safeChild } = child;
+  const { transactions, ...safeChild } = child;
   return {
     ...safeChild,
     saldoCents: transactions.reduce((sum, t) => sum + t.amountCents, 0),

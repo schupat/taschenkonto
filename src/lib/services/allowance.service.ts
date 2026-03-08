@@ -1,6 +1,42 @@
 import { prisma } from "@/lib/prisma";
 import type { AllowanceFrequency } from "@prisma/client";
 
+const ALLOWANCE_RUN_HOUR = 8;
+
+function atAllowanceRunTime(date: Date): Date {
+  const scheduled = new Date(date);
+  scheduled.setHours(ALLOWANCE_RUN_HOUR, 0, 0, 0);
+  return scheduled;
+}
+
+function getMonthlyScheduledDate(
+  year: number,
+  month: number,
+  dayOfMonth: number
+): Date {
+  const scheduled = new Date(year, month, 1);
+  scheduled.setDate(Math.min(dayOfMonth, daysInMonth(scheduled)));
+  return atAllowanceRunTime(scheduled);
+}
+
+function getScheduleDay(
+  frequency: AllowanceFrequency,
+  dayOfWeek?: number | null,
+  dayOfMonth?: number | null
+): number {
+  if (frequency === "WEEKLY") {
+    if (dayOfWeek === undefined || dayOfWeek === null) {
+      throw new Error("Weekly allowance rules require dayOfWeek");
+    }
+    return dayOfWeek;
+  }
+
+  if (dayOfMonth === undefined || dayOfMonth === null) {
+    throw new Error("Monthly allowance rules require dayOfMonth");
+  }
+  return dayOfMonth;
+}
+
 export async function getAllowanceRules(
   childAccountId: string,
   familyId: string
@@ -50,7 +86,13 @@ export async function createAllowanceRule(
 export async function updateAllowanceRule(
   ruleId: string,
   familyId: string,
-  data: { amountCents?: number; isActive?: boolean }
+  data: {
+    amountCents?: number;
+    isActive?: boolean;
+    frequency?: "WEEKLY" | "MONTHLY";
+    dayOfWeek?: number | null;
+    dayOfMonth?: number | null;
+  }
 ) {
   const rule = await prisma.allowanceRule.findFirst({
     where: { id: ruleId },
@@ -60,9 +102,39 @@ export async function updateAllowanceRule(
     throw new Error("Rule not found");
   }
 
+  const nextFrequency = data.frequency ?? rule.frequency;
+  const nextDayOfWeek =
+    Object.prototype.hasOwnProperty.call(data, "dayOfWeek") ? data.dayOfWeek : rule.dayOfWeek;
+  const nextDayOfMonth =
+    Object.prototype.hasOwnProperty.call(data, "dayOfMonth") ? data.dayOfMonth : rule.dayOfMonth;
+
+  const shouldRecalculateSchedule =
+    data.frequency !== undefined ||
+    Object.prototype.hasOwnProperty.call(data, "dayOfWeek") ||
+    Object.prototype.hasOwnProperty.call(data, "dayOfMonth") ||
+    data.isActive === true;
+
+  const updateData: {
+    amountCents?: number;
+    isActive?: boolean;
+    frequency?: "WEEKLY" | "MONTHLY";
+    dayOfWeek?: number | null;
+    dayOfMonth?: number | null;
+    nextRunAt?: Date;
+  } = { ...data };
+
+  if (shouldRecalculateSchedule) {
+    updateData.nextRunAt = computeNextRunAt(
+      nextFrequency,
+      new Date(),
+      nextDayOfWeek,
+      nextDayOfMonth
+    );
+  }
+
   return prisma.allowanceRule.update({
     where: { id: ruleId },
-    data,
+    data: updateData,
   });
 }
 
@@ -87,66 +159,114 @@ export async function processAllowances() {
 
   const dueRules = await prisma.allowanceRule.findMany({
     where: { isActive: true, nextRunAt: { lte: now } },
-    include: { childAccount: true },
+    select: { id: true },
   });
 
   let processed = 0;
 
   for (const rule of dueRules) {
-    const nextRunAt = computeNextRunAt(
-      rule.frequency,
-      now,
-      rule.dayOfWeek,
-      rule.dayOfMonth
-    );
-
-    // Fully atomic: claim + payment in one transaction.
-    // Prevents lost payments if the process crashes between claim and transaction creation.
-    let paid = false;
     await prisma.$transaction(async (tx) => {
-      const claimed = await tx.allowanceRule.updateMany({
-        where: { id: rule.id, nextRunAt: { lte: now } },
-        data: { lastRunAt: now, nextRunAt },
-      });
-      if (claimed.count === 0) return; // Already processed by another instance
-
-      await tx.transaction.create({
-        data: {
-          amountCents: rule.amountCents,
-          type: "ALLOWANCE",
-          origin: "ALLOWANCE_RULE",
-          description: `Taschengeld (${rule.frequency === "WEEKLY" ? "wöchentlich" : "monatlich"})`,
-          childAccountId: rule.childAccountId,
+      const currentRule = await tx.allowanceRule.findUnique({
+        where: { id: rule.id },
+        select: {
+          id: true,
+          amountCents: true,
+          frequency: true,
+          dayOfWeek: true,
+          dayOfMonth: true,
+          nextRunAt: true,
+          childAccountId: true,
+          isActive: true,
         },
       });
-      paid = true;
-    });
+      if (!currentRule || !currentRule.isActive || currentRule.nextRunAt > now) return;
 
-    if (paid) processed++;
+      const { dueRunDates, nextRunAt } = collectDueRunDates(
+        currentRule.frequency,
+        currentRule.nextRunAt,
+        now,
+        currentRule.dayOfWeek,
+        currentRule.dayOfMonth
+      );
+      if (dueRunDates.length === 0) return;
+
+      const claimed = await tx.allowanceRule.updateMany({
+        where: { id: currentRule.id, nextRunAt: currentRule.nextRunAt, isActive: true },
+        data: {
+          lastRunAt: dueRunDates[dueRunDates.length - 1],
+          nextRunAt,
+        },
+      });
+      if (claimed.count === 0) return;
+
+      for (const runAt of dueRunDates) {
+        await tx.transaction.create({
+          data: {
+            amountCents: currentRule.amountCents,
+            type: "ALLOWANCE",
+            origin: "ALLOWANCE_RULE",
+            description: `Taschengeld (${currentRule.frequency === "WEEKLY" ? "wöchentlich" : "monatlich"})`,
+            childAccountId: currentRule.childAccountId,
+            createdAt: runAt,
+          },
+        });
+      }
+
+      processed += dueRunDates.length;
+    });
   }
 
   return processed;
 }
 
-function computeNextRunAt(
+export function computeNextRunAt(
   frequency: AllowanceFrequency,
   from: Date,
   dayOfWeek?: number | null,
   dayOfMonth?: number | null
 ): Date {
-  const next = new Date(from);
-
   if (frequency === "WEEKLY") {
-    next.setDate(next.getDate() + 7);
-  } else {
-    next.setMonth(next.getMonth() + 1);
-    if (dayOfMonth) {
-      next.setDate(Math.min(dayOfMonth, daysInMonth(next)));
+    const targetDay = getScheduleDay(frequency, dayOfWeek, dayOfMonth);
+    const next = new Date(from);
+    const dayOffset = (targetDay - next.getDay() + 7) % 7;
+
+    next.setDate(next.getDate() + dayOffset);
+    const scheduled = atAllowanceRunTime(next);
+    if (scheduled <= from) {
+      scheduled.setDate(scheduled.getDate() + 7);
     }
+    return scheduled;
   }
 
-  next.setHours(8, 0, 0, 0);
-  return next;
+  const targetDay = getScheduleDay(frequency, dayOfWeek, dayOfMonth);
+  const scheduledThisMonth = getMonthlyScheduledDate(
+    from.getFullYear(),
+    from.getMonth(),
+    targetDay
+  );
+  if (scheduledThisMonth > from) {
+    return scheduledThisMonth;
+  }
+
+  return getMonthlyScheduledDate(from.getFullYear(), from.getMonth() + 1, targetDay);
+}
+
+export function collectDueRunDates(
+  frequency: AllowanceFrequency,
+  nextRunAt: Date,
+  now: Date,
+  dayOfWeek?: number | null,
+  dayOfMonth?: number | null
+): { dueRunDates: Date[]; nextRunAt: Date } {
+  const dueRunDates: Date[] = [];
+  let scheduledRun = new Date(nextRunAt);
+
+  while (scheduledRun <= now) {
+    dueRunDates.push(new Date(scheduledRun));
+    scheduledRun = computeNextRunAt(frequency, scheduledRun, dayOfWeek, dayOfMonth);
+  }
+
+  return { dueRunDates, nextRunAt: scheduledRun };
 }
 
 function daysInMonth(date: Date): number {

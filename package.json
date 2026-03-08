@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --import tsx --test src/lib/services/*.test.ts",
     "audit": "npm audit --audit-level=high",
     "prepare": "husky"
   },
