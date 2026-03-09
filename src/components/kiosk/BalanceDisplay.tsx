@@ -49,7 +49,7 @@ export function BalanceDisplay({ cents, currency, locale = "de" }: BalanceDispla
   return (
     <div className="my-4 text-center">
       <div
-        className={`crt-glow text-5xl font-bold tabular-nums ${
+        className={`crt-glow text-4xl font-bold tabular-nums sm:text-5xl ${
           displayed >= 0 ? "text-kiosk-text" : "text-red-500"
         }`}
       >

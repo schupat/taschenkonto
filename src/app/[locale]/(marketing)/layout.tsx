@@ -23,7 +23,7 @@ export default function MarketingLayout({
             <ThemeToggle />
             <Link
               href="/login"
-              className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white shadow-md shadow-accent/25 transition-all duration-200 hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/30"
+              className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white shadow-md shadow-accent/20 transition-all duration-200 hover:bg-accent-hover hover:shadow-lg"
             >
               {t("login")}
             </Link>

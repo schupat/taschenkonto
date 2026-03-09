@@ -95,7 +95,7 @@ export default function KioskLoginPage() {
   // Step 1: Select child
   if (!selected) {
     return (
-      <div className="flex min-h-[80vh] flex-col items-center justify-center gap-8">
+      <div className="flex min-h-[80vh] flex-col items-center justify-center gap-6 sm:gap-8">
         <div className="text-center">
           <h1 className="crt-glow text-3xl font-bold animate-fade-in-up">
             {t("welcome")}
@@ -110,12 +110,12 @@ export default function KioskLoginPage() {
             {">"} Loading accounts...
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-5 animate-fade-in-up stagger-2">
+          <div className="grid w-full max-w-xl grid-cols-1 gap-4 animate-fade-in-up stagger-2 sm:grid-cols-2">
             {children.map((child) => (
               <button
                 key={child.id}
                 onClick={() => setSelected(child)}
-                className="kiosk-panel group flex flex-col items-center gap-3 rounded-xl border border-kiosk-border bg-kiosk-panel p-8 transition-all hover:border-kiosk-text hover:shadow-[0_0_20px_rgba(51,255,51,0.15)] active:scale-95"
+                className="kiosk-panel group flex w-full flex-col items-center gap-3 rounded-xl border border-kiosk-border bg-kiosk-panel p-6 transition-all hover:border-kiosk-text hover:shadow-[0_0_20px_rgba(51,255,51,0.15)] active:scale-95 sm:p-8"
               >
                 <span className="text-6xl transition-transform group-hover:scale-110">
                   {child.avatarEmoji}
@@ -135,7 +135,7 @@ export default function KioskLoginPage() {
 
   // Step 2: Enter PIN
   return (
-    <div className="flex min-h-[80vh] flex-col items-center justify-center gap-6 animate-fade-in">
+    <div className="flex min-h-[80vh] flex-col items-center justify-center gap-5 animate-fade-in sm:gap-6">
       <button
         onClick={() => {
           setSelected(null);
@@ -151,10 +151,10 @@ export default function KioskLoginPage() {
         <h2 className="crt-glow mt-3 text-2xl font-bold">{selected.name}</h2>
       </div>
 
-      <TerminalScreen title={t("enterPin")} className="w-full max-w-xs">
+      <TerminalScreen title={t("enterPin")} className="w-full max-w-xs sm:max-w-sm">
         <div className="flex flex-col items-center py-4">
           {error && (
-            <div className="mb-4 rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm text-red-400">
+            <div className="mb-4 w-full rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm text-red-400">
               {">"} {error}
             </div>
           )}

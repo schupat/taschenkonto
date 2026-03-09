@@ -15,7 +15,7 @@ export function TerminalButton({ label, onClick, variant = "default", disabled }
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "rounded border px-4 py-3 font-mono text-sm font-bold uppercase tracking-wider transition-colors",
+        "w-full rounded border px-4 py-3 font-mono text-sm font-bold uppercase tracking-wider transition-colors sm:w-auto",
         "active:scale-95 disabled:opacity-40",
         variant === "default" &&
           "border-kiosk-text bg-kiosk-text/10 text-kiosk-text hover:bg-kiosk-text/20",

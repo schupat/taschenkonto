@@ -89,7 +89,7 @@ export default function KioskDashboard() {
 
   if (error || !data) {
     return (
-      <div className="flex min-h-[80vh] flex-col items-center justify-center gap-4">
+      <div className="flex min-h-[80vh] flex-col items-center justify-center gap-4 px-2 text-center">
         <div className="crt-glow text-red-400 text-xl">{">"} SYSTEM ERROR</div>
         <div className="text-sm text-kiosk-text-dim">Connection failed. Check network.</div>
         <TerminalButton label="[ RETRY ]" onClick={refetch} />
@@ -128,7 +128,7 @@ export default function KioskDashboard() {
   return (
     <div className="flex flex-col gap-4 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <span className="text-4xl">{data.avatarEmoji}</span>
           <div>
@@ -238,7 +238,7 @@ export default function KioskDashboard() {
       </TerminalScreen>
 
       {/* Footer */}
-      <div className="py-4 text-center text-xs text-kiosk-text-dim">
+      <div className="px-2 py-4 text-center text-[11px] text-kiosk-text-dim sm:text-xs">
         <span className="crt-glow-amber text-kiosk-amber/50">&#9608;</span>
         {" "}TASCHENKONTO TERMINAL v2.0 — AUTO-REFRESH 10s{" "}
         <span className="crt-glow-amber text-kiosk-amber/50">&#9608;</span>

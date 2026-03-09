@@ -51,18 +51,18 @@ export default async function ChildDetailPage({
       </Link>
 
       {/* Hero Section */}
-      <div className="animate-fade-in-up mt-4 rounded-2xl border border-border/50 bg-bg-card p-6 shadow-sm">
+      <div className="animate-fade-in-up mt-4 rounded-2xl border border-border/50 bg-bg-card p-5 shadow-sm sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-light text-4xl">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-accent-light text-3xl sm:h-16 sm:w-16 sm:text-4xl">
               {child.avatarEmoji}
             </div>
-            <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">
+            <div className="min-w-0">
+              <h1 className="truncate text-2xl font-extrabold tracking-tight text-text-primary">
                 {child.name}
               </h1>
               <p
-                className={`mt-0.5 text-3xl font-extrabold tabular-nums ${
+                className={`mt-0.5 text-2xl font-extrabold tabular-nums sm:text-3xl ${
                   isPositive ? "text-success" : "text-danger"
                 }`}
               >
@@ -72,7 +72,7 @@ export default async function ChildDetailPage({
                 href={`/${locale}/kiosk/login?family=${session.familyId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-1 inline-flex items-center gap-1 rounded-md bg-kiosk-bg px-2.5 py-1 font-mono text-xs text-kiosk-text transition-colors hover:bg-kiosk-bg/80"
+                className="mt-2 inline-flex max-w-full items-center gap-1 rounded-md bg-kiosk-bg px-2.5 py-1 font-mono text-xs text-kiosk-text transition-colors hover:bg-kiosk-bg/80"
               >
                 {">"} {t("children.openInKiosk")}
               </a>

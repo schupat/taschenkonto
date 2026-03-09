@@ -1,5 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { Card } from "@/components/ui/Card";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 export default function LandingPage() {
   const t = useTranslations();
@@ -7,36 +9,35 @@ export default function LandingPage() {
   return (
     <>
       {/* ── Hero ────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-purple-500/5" />
-        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-purple-500/10 blur-3xl" />
+      <section className="relative overflow-hidden border-b border-border/50 bg-bg-app">
+        <div className="absolute inset-0 opacity-90 gradient-hero" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.24),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.12),transparent_25%)]" />
 
-        <div className="relative mx-auto max-w-4xl px-6 pb-20 pt-24 text-center">
+        <div className="relative mx-auto max-w-5xl px-6 pb-20 pt-24 text-center">
           <div className="animate-fade-in-up">
-            <span className="inline-block rounded-full border border-accent/20 bg-accent-light px-4 py-1.5 text-sm font-medium text-accent">
+            <span className="inline-block rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white/90 backdrop-blur-sm">
               {t("marketing.badge")}
             </span>
           </div>
 
-          <h1 className="animate-fade-in-up stagger-1 mt-8 text-5xl font-extrabold tracking-tight text-text-primary sm:text-6xl lg:text-7xl">
+          <h1 className="animate-fade-in-up stagger-1 mt-8 text-5xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl">
             {t("marketing.hero")}
           </h1>
 
-          <p className="animate-fade-in-up stagger-2 mx-auto mt-6 max-w-2xl text-lg text-text-secondary sm:text-xl">
+          <p className="animate-fade-in-up stagger-2 mx-auto mt-6 max-w-2xl text-lg text-white/80 sm:text-xl">
             {t("marketing.subtitle")}
           </p>
 
           <div className="animate-fade-in-up stagger-3 mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/login"
-              className="animate-pulse-glow rounded-full bg-accent px-8 py-3.5 text-lg font-semibold text-white shadow-lg shadow-accent/25 transition-all duration-200 hover:bg-accent-hover hover:shadow-xl hover:shadow-accent/30"
+              className="animate-pulse-glow rounded-full bg-white px-8 py-3.5 text-lg font-semibold text-accent shadow-lg shadow-slate-900/20 transition-all duration-200 hover:bg-slate-100 hover:shadow-xl"
             >
               {t("marketing.cta")}
             </Link>
             <Link
               href="/demo"
-              className="rounded-full border border-border px-8 py-3.5 text-lg font-semibold text-text-secondary transition-all duration-200 hover:border-accent hover:text-accent"
+              className="rounded-full border border-white/20 bg-white/10 px-8 py-3.5 text-lg font-semibold text-white transition-all duration-200 hover:bg-white/15"
             >
               {t("marketing.ctaDemo")}
             </Link>
@@ -47,12 +48,12 @@ export default function LandingPage() {
       {/* ── How It Works ────────────────────────────────────── */}
       <section id="how-it-works" className="border-t border-border/50 bg-bg-app py-20">
         <div className="mx-auto max-w-4xl px-6 text-center">
-          <h2 className="text-3xl font-extrabold tracking-tight text-text-primary sm:text-4xl">
-            {t("marketing.howItWorksTitle")}
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
-            {t("marketing.howItWorksSubtitle")}
-          </p>
+          <SectionHeader
+            align="center"
+            eyebrow="Flow"
+            title={t("marketing.howItWorksTitle")}
+            description={t("marketing.howItWorksSubtitle")}
+          />
 
           <div className="mt-14 grid gap-10 sm:grid-cols-3">
             <StepCard
@@ -80,14 +81,12 @@ export default function LandingPage() {
       {/* ── Features ────────────────────────────────────────── */}
       <section className="border-t border-border/50 bg-bg-card py-20">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold tracking-tight text-text-primary sm:text-4xl">
-              {t("marketing.featuresTitle")}
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
-              {t("marketing.featuresSubtitle")}
-            </p>
-          </div>
+          <SectionHeader
+            align="center"
+            eyebrow="Capabilities"
+            title={t("marketing.featuresTitle")}
+            description={t("marketing.featuresSubtitle")}
+          />
 
           <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             <FeatureCard
@@ -127,13 +126,15 @@ export default function LandingPage() {
       {/* ── Benefits ────────────────────────────────────────── */}
       <section className="border-t border-border/50 bg-bg-app py-20">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-extrabold tracking-tight text-text-primary sm:text-4xl">
-            {t("marketing.benefitsTitle")}
-          </h2>
+          <SectionHeader
+            align="center"
+            eyebrow="Who It Helps"
+            title={t("marketing.benefitsTitle")}
+          />
 
           <div className="mt-14 grid gap-10 md:grid-cols-2">
             {/* Parents */}
-            <div className="rounded-2xl border border-border/50 bg-bg-card p-8 shadow-sm">
+            <Card className="h-full" padding="lg">
               <div className="flex items-center gap-3">
                 <span className="text-3xl">👨‍👩‍👧</span>
                 <h3 className="text-xl font-bold text-text-primary">
@@ -146,10 +147,10 @@ export default function LandingPage() {
                 <BenefitItem text={t("marketing.parentBenefit3")} />
                 <BenefitItem text={t("marketing.parentBenefit4")} />
               </ul>
-            </div>
+            </Card>
 
             {/* Kids */}
-            <div className="rounded-2xl border border-border/50 bg-bg-card p-8 shadow-sm">
+            <Card className="h-full" padding="lg">
               <div className="flex items-center gap-3">
                 <span className="text-3xl">🧒</span>
                 <h3 className="text-xl font-bold text-text-primary">
@@ -162,7 +163,7 @@ export default function LandingPage() {
                 <BenefitItem text={t("marketing.kidBenefit3")} />
                 <BenefitItem text={t("marketing.kidBenefit4")} />
               </ul>
-            </div>
+            </Card>
           </div>
         </div>
       </section>
@@ -170,14 +171,12 @@ export default function LandingPage() {
       {/* ── Why Taschenkonto ────────────────────────────────── */}
       <section className="border-t border-border/50 bg-bg-card py-20">
         <div className="mx-auto max-w-5xl px-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold tracking-tight text-text-primary sm:text-4xl">
-              {t("marketing.whyTitle")}
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
-              {t("marketing.whySubtitle")}
-            </p>
-          </div>
+          <SectionHeader
+            align="center"
+            eyebrow="Trust"
+            title={t("marketing.whyTitle")}
+            description={t("marketing.whySubtitle")}
+          />
 
           <div className="mt-14 grid gap-8 sm:grid-cols-3">
             <WhyCard
@@ -289,13 +288,13 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="card-hover rounded-2xl border border-border/50 bg-bg-app p-6 shadow-sm">
+    <Card interactive tone="muted" className="h-full">
       <span className="text-3xl">{emoji}</span>
       <h3 className="mt-4 text-lg font-bold text-text-primary">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-text-secondary">
         {description}
       </p>
-    </div>
+    </Card>
   );
 }
 
@@ -318,12 +317,12 @@ function WhyCard({
   description: string;
 }) {
   return (
-    <div className="text-center">
+    <Card tone="muted" className="h-full text-center">
       <span className="text-4xl">{emoji}</span>
       <h3 className="mt-4 text-lg font-bold text-text-primary">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-text-secondary">
         {description}
       </p>
-    </div>
+    </Card>
   );
 }

@@ -115,40 +115,42 @@ export function InvestmentTerminal({
             </div>
 
             {/* Details grid */}
-            <div className="ml-2 space-y-0.5">
-              <div className="flex gap-2">
-                <span className="w-[14ch] text-kiosk-text-dim">Eingezahlt:</span>
-                <span className="text-kiosk-text">
+            <div className="space-y-1 sm:ml-2">
+              <div className="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-2 gap-y-0.5">
+                <span className="text-kiosk-text-dim">Eingezahlt:</span>
+                <span className="min-w-0 text-kiosk-text">
                   {formatCents(inv.principalCents, currency, locale)}
                 </span>
               </div>
 
-              <div className="flex gap-2">
-                <span className="w-[14ch] text-kiosk-text-dim">Aktuell:</span>
-                <span className="crt-glow text-kiosk-text font-bold">
-                  {formatCents(inv.currentBalanceCents, currency, locale)}
-                </span>
-                {earned > 0 && (
-                  <span className="crt-glow text-kiosk-text">
-                    (+{formatCents(earned, currency, locale)})
+              <div className="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-2 gap-y-0.5">
+                <span className="text-kiosk-text-dim">Aktuell:</span>
+                <div className="flex min-w-0 flex-wrap gap-x-2 gap-y-0.5">
+                  <span className="crt-glow text-kiosk-text font-bold">
+                    {formatCents(inv.currentBalanceCents, currency, locale)}
                   </span>
-                )}
+                  {earned > 0 && (
+                    <span className="crt-glow text-kiosk-text">
+                      (+{formatCents(earned, currency, locale)})
+                    </span>
+                  )}
+                </div>
               </div>
 
-              <div className="flex gap-2">
-                <span className="w-[14ch] text-kiosk-text-dim">Zinssatz:</span>
+              <div className="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-2 gap-y-0.5">
+                <span className="text-kiosk-text-dim">Zinssatz:</span>
                 <span className="text-kiosk-text">{ratePercent}% p.a.</span>
               </div>
 
               {inv.termMonths && (
-                <div className="flex gap-2">
-                  <span className="w-[14ch] text-kiosk-text-dim">Laufzeit:</span>
+                <div className="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-2 gap-y-0.5">
+                  <span className="text-kiosk-text-dim">Laufzeit:</span>
                   <span className="text-kiosk-text">{inv.termMonths} Monate</span>
                 </div>
               )}
 
-              <div className="flex gap-2">
-                <span className="w-[14ch] text-kiosk-text-dim">Status:</span>
+              <div className="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-2 gap-y-0.5">
+                <span className="text-kiosk-text-dim">Status:</span>
                 <span className={status.className}>
                   {status.symbol} {status.label}
                 </span>
@@ -184,17 +186,17 @@ export function InvestmentTerminal({
                       <div className="crt-glow-amber text-kiosk-amber text-sm">
                         {">"} Bist du sicher?
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col gap-2 sm:flex-row">
                         <button
                           onClick={() => handleWithdraw(inv.id)}
                           disabled={withdrawing === inv.id}
-                          className="rounded border border-kiosk-text bg-kiosk-text/10 px-4 py-2 font-mono text-sm font-bold text-kiosk-text hover:bg-kiosk-text/20 active:scale-95 disabled:opacity-40"
+                          className="w-full rounded border border-kiosk-text bg-kiosk-text/10 px-4 py-2 font-mono text-sm font-bold text-kiosk-text hover:bg-kiosk-text/20 active:scale-95 disabled:opacity-40 sm:w-auto"
                         >
                           {withdrawing === inv.id ? "[ ... ]" : "[ JA ]"}
                         </button>
                         <button
                           onClick={() => setConfirmingWithdraw(null)}
-                          className="rounded border border-kiosk-text-dim bg-kiosk-text/5 px-4 py-2 font-mono text-sm font-bold text-kiosk-text-dim hover:bg-kiosk-text/10 active:scale-95"
+                          className="w-full rounded border border-kiosk-text-dim bg-kiosk-text/5 px-4 py-2 font-mono text-sm font-bold text-kiosk-text-dim hover:bg-kiosk-text/10 active:scale-95 sm:w-auto"
                         >
                           [ NEIN ]
                         </button>
@@ -203,7 +205,7 @@ export function InvestmentTerminal({
                   ) : (
                     <button
                       onClick={() => setConfirmingWithdraw(inv.id)}
-                      className="rounded border border-kiosk-text bg-kiosk-text/10 px-4 py-2 font-mono text-sm font-bold text-kiosk-text hover:bg-kiosk-text/20 active:scale-95"
+                      className="w-full rounded border border-kiosk-text bg-kiosk-text/10 px-4 py-2 font-mono text-sm font-bold text-kiosk-text hover:bg-kiosk-text/20 active:scale-95 sm:w-auto"
                     >
                       [ AUSZAHLEN ]
                     </button>
@@ -219,7 +221,7 @@ export function InvestmentTerminal({
                       <div className="crt-glow text-kiosk-text text-sm">
                         {">"} Betrag eingeben:
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                         <input
                           type="number"
                           step="0.01"
@@ -227,19 +229,19 @@ export function InvestmentTerminal({
                           placeholder="5.00"
                           value={topUpAmount}
                           onChange={(e) => setTopUpAmount(e.target.value)}
-                          className="w-24 rounded border border-kiosk-text/30 bg-kiosk-bg px-2 py-2 font-mono text-sm text-kiosk-text placeholder:text-kiosk-text-dim focus:border-kiosk-text focus:outline-none"
+                          className="w-full rounded border border-kiosk-text/30 bg-kiosk-bg px-2 py-2 font-mono text-sm text-kiosk-text placeholder:text-kiosk-text-dim focus:border-kiosk-text focus:outline-none sm:w-24"
                           autoFocus
                         />
                         <button
                           onClick={() => handleTopUp(inv.id)}
                           disabled={Math.round((parseFloat(topUpAmount) || 0) * 100) <= 0}
-                          className="rounded border border-kiosk-text bg-kiosk-text/10 px-4 py-2 font-mono text-sm font-bold text-kiosk-text hover:bg-kiosk-text/20 active:scale-95 disabled:opacity-40"
+                          className="w-full rounded border border-kiosk-text bg-kiosk-text/10 px-4 py-2 font-mono text-sm font-bold text-kiosk-text hover:bg-kiosk-text/20 active:scale-95 disabled:opacity-40 sm:w-auto"
                         >
                           [ OK ]
                         </button>
                         <button
                           onClick={() => { setToppingUp(null); setTopUpAmount(""); }}
-                          className="rounded border border-kiosk-text-dim bg-kiosk-text/5 px-4 py-2 font-mono text-sm font-bold text-kiosk-text-dim hover:bg-kiosk-text/10 active:scale-95"
+                          className="w-full rounded border border-kiosk-text-dim bg-kiosk-text/5 px-4 py-2 font-mono text-sm font-bold text-kiosk-text-dim hover:bg-kiosk-text/10 active:scale-95 sm:w-auto"
                         >
                           [ X ]
                         </button>
@@ -248,7 +250,7 @@ export function InvestmentTerminal({
                   ) : (
                     <button
                       onClick={() => setToppingUp(inv.id)}
-                      className="rounded border border-kiosk-text bg-kiosk-text/10 px-4 py-2 font-mono text-sm font-bold text-kiosk-text hover:bg-kiosk-text/20 active:scale-95"
+                      className="w-full rounded border border-kiosk-text bg-kiosk-text/10 px-4 py-2 font-mono text-sm font-bold text-kiosk-text hover:bg-kiosk-text/20 active:scale-95 sm:w-auto"
                     >
                       [ NACHZAHLEN ]
                     </button>

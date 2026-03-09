@@ -10,6 +10,9 @@ import { ApprovalButtons } from "../chores/ApprovalButtons";
 import { WithdrawalApprovalButtons } from "@/components/app/WithdrawalApprovalButtons";
 import { DashboardActions } from "./DashboardActions";
 import { SetupWizard } from "@/components/app/SetupWizard";
+import { Card } from "@/components/ui/Card";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { Link } from "@/i18n/navigation";
 
 export default async function DashboardPage({
   params,
@@ -54,15 +57,13 @@ export default async function DashboardPage({
         />
       )}
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="animate-fade-in-up">
-          <h1 className="text-2xl font-extrabold tracking-tight text-text-primary lg:text-3xl">
-            {t("title")}
-          </h1>
-          <p className="mt-1 text-text-secondary">
-            {family?.name || t("family")}
-          </p>
-        </div>
+      <div className="flex items-start justify-between gap-4">
+        <SectionHeader
+          className="animate-fade-in-up"
+          eyebrow={t("family")}
+          title={t("title")}
+          description={family?.name || t("family")}
+        />
         <div className="animate-fade-in-up stagger-1">
           <DashboardActions />
         </div>
@@ -104,9 +105,11 @@ export default async function DashboardPage({
           </h2>
           <div className="mt-3 grid gap-3">
             {pendingApprovals.map((approval) => (
-              <div
+              <Card
                 key={approval.id}
-                className="card-hover flex items-center justify-between rounded-xl border border-warning/20 bg-warning/5 p-4"
+                className="flex items-center justify-between border-warning/20 bg-warning/5"
+                padding="md"
+                interactive
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-bg-card text-xl shadow-sm">
@@ -124,7 +127,7 @@ export default async function DashboardPage({
                   </div>
                 </div>
                 <ApprovalButtons completionId={approval.id} />
-              </div>
+              </Card>
             ))}
           </div>
         </div>
@@ -141,9 +144,11 @@ export default async function DashboardPage({
           </h2>
           <div className="mt-3 grid gap-3">
             {pendingWithdrawals.map((inv) => (
-              <div
+              <Card
                 key={inv.id}
-                className="card-hover flex items-center justify-between rounded-xl border border-accent/20 bg-accent/5 p-4"
+                className="flex items-center justify-between border-accent/20 bg-accent/5"
+                padding="md"
+                interactive
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-bg-card text-xl shadow-sm">
@@ -159,7 +164,7 @@ export default async function DashboardPage({
                   </div>
                 </div>
                 <WithdrawalApprovalButtons investmentId={inv.id} />
-              </div>
+              </Card>
             ))}
           </div>
         </div>
@@ -186,22 +191,35 @@ export default async function DashboardPage({
 
       {/* Kiosk Link */}
       {children.length > 0 && (
-        <a
-          href={`/kiosk/login?family=${session.familyId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="animate-fade-in-up stagger-4 mt-10 block rounded-2xl border border-kiosk-border bg-kiosk-bg p-6 text-center transition-shadow hover:shadow-[0_0_30px_rgba(51,255,51,0.15)]"
-        >
-          <p className="font-mono text-sm text-kiosk-text-dim">
-            {">"} KIOSK MODE
-          </p>
-          <p className="mt-2 font-mono text-kiosk-text crt-glow">
-            /kiosk/login?family={session.familyId}
-          </p>
-          <p className="mt-3 text-xs text-kiosk-text-dim">
-            {t("openKiosk")} — Retro CRT Terminal
-          </p>
-        </a>
+        <Card className="animate-fade-in-up stagger-4 mt-10 overflow-hidden border-accent/15" padding="lg">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
+                Kiosk
+              </p>
+              <h2 className="mt-2 text-xl font-bold text-text-primary">
+                {t("openKiosk")}
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm text-text-secondary">
+                Retro CRT Terminal
+              </p>
+              <div className="mt-4 inline-flex max-w-full items-center gap-2 rounded-full border border-border bg-bg-app px-3 py-1.5 text-xs text-text-muted">
+                <span className="font-mono truncate">
+                  /kiosk/login?family={session.familyId}
+                </span>
+              </div>
+            </div>
+
+            <Link
+              href={`/kiosk/login?family=${session.familyId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-hover"
+            >
+              {t("openKiosk")}
+            </Link>
+          </div>
+        </Card>
       )}
     </div>
   );
@@ -226,9 +244,10 @@ function StatCard({
   };
 
   return (
-    <div
+    <Card
       // eslint-disable-next-line security/detect-object-injection
-      className={`stat-card ${colors[accent]} rounded-xl border border-border/50 p-5 shadow-sm`}
+      className={`stat-card ${colors[accent]}`}
+      padding="md"
     >
       <p className="text-sm font-medium text-text-secondary">{label}</p>
       <p
@@ -238,6 +257,6 @@ function StatCard({
       >
         {value}
       </p>
-    </div>
+    </Card>
   );
 }

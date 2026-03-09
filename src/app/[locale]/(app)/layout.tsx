@@ -50,29 +50,32 @@ export default async function AppLayout({
       {/* Main content */}
       <div className="flex flex-1 flex-col">
         {/* Mobile header */}
-        <header className="border-b border-border bg-bg-card px-6 py-3 md:hidden">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🏦</span>
-            <span className="text-lg font-bold text-text-primary">
-              {t("common.appName")}
-            </span>
+        <header className="border-b border-border bg-bg-card px-4 py-3 md:hidden">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🏦</span>
+              <span className="text-lg font-bold text-text-primary">
+                {t("common.appName")}
+              </span>
+            </div>
+            <ThemeToggle />
           </div>
-          <nav className="mt-2 flex gap-3">
+          <nav className="mt-3 flex flex-wrap gap-2">
             <Link
               href="/dashboard"
-              className="rounded-lg px-3 py-1 text-sm font-medium text-text-secondary hover:bg-bg-app"
+              className="rounded-full px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-app"
             >
               📊 {t("dashboard.title")}
             </Link>
             <Link
               href="/chores"
-              className="rounded-lg px-3 py-1 text-sm font-medium text-text-secondary hover:bg-bg-app"
+              className="rounded-full px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-app"
             >
               ✅ {t("chores.title")}
             </Link>
             <Link
               href="/settings"
-              className="rounded-lg px-3 py-1 text-sm font-medium text-text-secondary hover:bg-bg-app"
+              className="rounded-full px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-app"
             >
               ⚙️ {t("settings.title")}
             </Link>

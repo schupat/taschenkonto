@@ -60,12 +60,14 @@ export function TerminalLog({ transactions, currency, locale = "de" }: TerminalL
         const amount = fmt.format(tx.amountCents / 100);
         const color = tx.amountCents >= 0 ? "text-kiosk-text" : "text-red-400";
         return (
-          <div key={tx.id} className="flex items-baseline gap-2">
+          <div key={tx.id} className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 sm:flex sm:items-baseline sm:gap-2">
             <span className="text-kiosk-text-dim">{dateStr}</span>
-            <span className="flex-1 truncate text-kiosk-text-dim">
+            <span className="min-w-0 text-kiosk-text-dim sm:flex-1 sm:truncate">
               {tx.description || typeLabel(tx.type, t)}
             </span>
-            <span className={`font-bold ${color}`}>{amount}</span>
+            <span className={`col-span-2 justify-self-start font-bold sm:col-span-1 sm:justify-self-auto ${color}`}>
+              {amount}
+            </span>
           </div>
         );
       })}

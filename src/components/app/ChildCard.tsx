@@ -1,6 +1,7 @@
 import { formatCents } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { Card } from "@/components/ui/Card";
 
 interface ChildCardProps {
   child: {
@@ -25,7 +26,7 @@ export async function ChildCard({ child, currency, locale }: ChildCardProps) {
     : null;
 
   return (
-    <div className="card-hover group rounded-2xl border border-border/50 bg-bg-card p-5 shadow-sm">
+    <Card className="group" interactive padding="md">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-light text-2xl">
@@ -90,6 +91,6 @@ export async function ChildCard({ child, currency, locale }: ChildCardProps) {
           {t("addTransaction")}
         </Link>
       </div>
-    </div>
+    </Card>
   );
 }

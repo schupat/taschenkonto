@@ -4,7 +4,7 @@ export default function KioskLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen bg-kiosk-bg font-mono text-kiosk-text overflow-hidden crt-screen-flicker">
+    <div className="relative min-h-screen overflow-hidden bg-kiosk-bg font-mono text-kiosk-text crt-screen-flicker">
       {/* CRT vignette — darkened edges like a curved tube */}
       <div
         className="pointer-events-none fixed inset-0 z-20"
@@ -29,7 +29,7 @@ export default function KioskLayout({
       </div>
 
       {/* CRT screen container */}
-      <div className="relative z-[5] mx-auto max-w-2xl px-4 py-6">
+      <div className="relative z-[5] mx-auto max-w-3xl px-3 py-4 sm:px-4 sm:py-6">
         {children}
       </div>
     </div>

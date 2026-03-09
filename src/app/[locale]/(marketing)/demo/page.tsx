@@ -105,9 +105,9 @@ export default function DemoPage() {
 
   return (
     <DemoShell>
-      <div className="flex flex-col gap-4 animate-fade-in p-4 sm:p-6">
+      <div className="flex flex-col gap-4 animate-fade-in p-3 sm:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="text-4xl">{DEMO_CHILD.avatarEmoji}</span>
             <div>
@@ -127,7 +127,7 @@ export default function DemoPage() {
           <div className="mb-2 text-xs text-kiosk-text-dim">
             {">"} {t("kiosk.yourBalance")}
           </div>
-          <div className="crt-glow text-4xl font-bold tabular-nums text-kiosk-text sm:text-5xl">
+          <div className="crt-glow text-3xl font-bold tabular-nums text-kiosk-text sm:text-5xl">
             {fmtBalance.format(DEMO_SALDO_CENTS / 100)}
           </div>
         </div>
@@ -137,13 +137,13 @@ export default function DemoPage() {
           <div className="mb-2 text-xs text-kiosk-text-dim">
             {">"} {t("kiosk.savingGoals")}
           </div>
-          <div className="mb-1 flex justify-between text-sm">
+          <div className="mb-1 flex flex-col gap-1 text-sm sm:flex-row sm:items-center sm:justify-between">
             <span className="text-kiosk-text">{DEMO_SAVING_GOAL.title}</span>
-            <span className="crt-glow-amber text-kiosk-amber">
+            <span className="crt-glow-amber break-words text-kiosk-amber">
               {fmtBalance.format(Math.max(DEMO_SALDO_CENTS, 0) / 100)} / {fmtBalance.format(DEMO_SAVING_GOAL.targetCents / 100)}
             </span>
           </div>
-          <span className="ascii-bar text-sm">
+          <span className="ascii-bar block overflow-x-auto whitespace-nowrap pb-1 text-sm">
             <span className="text-kiosk-text">{"[" + "█".repeat(goal.filled)}</span>
             <span className="text-kiosk-text-dim">{"░".repeat(goal.empty) + "]"}</span>
             <span className="ml-2 text-kiosk-amber">{goal.percent}%</span>
@@ -157,7 +157,7 @@ export default function DemoPage() {
           </div>
           <div className="space-y-2">
             {DEMO_CHORES.map((chore) => (
-              <div key={chore.id} className="flex items-center justify-between rounded border border-kiosk-border bg-kiosk-bg/50 px-3 py-2">
+              <div key={chore.id} className="flex flex-col gap-1 rounded border border-kiosk-border bg-kiosk-bg/50 px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-sm text-kiosk-text">{chore.title}</span>
                 <span className="text-sm font-bold text-kiosk-amber">
                   +{fmtBalance.format(chore.rewardCents / 100)}
@@ -183,12 +183,12 @@ export default function DemoPage() {
               const amount = fmt.format(tx.amountCents / 100);
               const color = tx.amountCents >= 0 ? "text-kiosk-text" : "text-red-400";
               return (
-                <div key={tx.id} className="flex items-baseline gap-2">
+                <div key={tx.id} className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 sm:flex sm:items-baseline sm:gap-2">
                   <span className="text-kiosk-text-dim">{dateStr}</span>
-                  <span className="flex-1 truncate text-kiosk-text-dim">
+                  <span className="min-w-0 text-kiosk-text-dim sm:flex-1 sm:truncate">
                     {tx.description}
                   </span>
-                  <span className={`font-bold ${color}`}>{amount}</span>
+                  <span className={`col-span-2 justify-self-start font-bold sm:col-span-1 ${color}`}>{amount}</span>
                 </div>
               );
             })}
@@ -203,10 +203,10 @@ export default function DemoPage() {
         </div>
 
         {/* Back to landing */}
-        <div className="text-center pb-4">
+        <div className="pb-4 text-center">
           <Link
             href="/login"
-            className="rounded-full bg-kiosk-text px-6 py-2.5 text-sm font-bold text-kiosk-bg transition-all hover:bg-kiosk-text/80"
+            className="inline-flex w-full justify-center rounded-full bg-kiosk-text px-6 py-2.5 text-sm font-bold text-kiosk-bg transition-all hover:bg-kiosk-text/80 sm:w-auto"
           >
             {t("marketing.cta")}
           </Link>
@@ -220,7 +220,7 @@ export default function DemoPage() {
 
 function DemoShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-lg px-4 py-8 sm:py-12">
+    <div className="mx-auto max-w-lg px-3 py-6 sm:px-4 sm:py-12">
       <div className="crt-screen relative overflow-hidden rounded-2xl border-2 border-kiosk-border bg-kiosk-bg font-mono text-kiosk-text shadow-[0_0_60px_rgba(51,255,51,0.15)]">
         {/* Scanlines */}
         <div className="crt-scanlines pointer-events-none absolute inset-0 z-10" />
