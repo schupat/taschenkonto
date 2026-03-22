@@ -1,0 +1,30 @@
+# Production override — use with:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Adds Caddy for automatic SSL (Let's Encrypt) and removes direct app port exposure.
+# Requires a valid Caddyfile in the repo root and DNS pointing to this server.
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - internal
+
+  app:
+    ports: !reset []
+
+volumes:
+  caddy_data:
+  caddy_config:

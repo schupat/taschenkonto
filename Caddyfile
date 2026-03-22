@@ -1,0 +1,7 @@
+taschenkonto.de {
+	reverse_proxy app:3000
+}
+
+www.taschenkonto.de {
+	redir https://taschenkonto.de{uri} permanent
+}
