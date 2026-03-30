@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Resend from "next-auth/providers/resend";
+import { Resend as ResendClient } from "resend";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
@@ -10,6 +11,25 @@ const providers: any[] = [
   Resend({
     apiKey: process.env.AUTH_RESEND_KEY,
     from: process.env.AUTH_EMAIL_FROM || "Taschenkonto <onboarding@resend.dev>",
+    async sendVerificationRequest({ identifier: email, url, provider }) {
+      // Fix the URL host if AUTH_URL is set (next-auth beta may use internal Docker host)
+      let magicUrl = url;
+      if (process.env.AUTH_URL) {
+        const authBase = new URL(process.env.AUTH_URL);
+        const linkUrl = new URL(url);
+        linkUrl.protocol = authBase.protocol;
+        linkUrl.host = authBase.host;
+        magicUrl = linkUrl.toString();
+      }
+
+      const resend = new ResendClient(process.env.AUTH_RESEND_KEY);
+      await resend.emails.send({
+        from: provider.from!,
+        to: email,
+        subject: "Anmelden bei Taschenkonto",
+        html: `<p>Klicke auf den Link, um dich anzumelden:</p><p><a href="${magicUrl}">${magicUrl}</a></p>`,
+      });
+    },
   }),
 ];
 
