@@ -28,6 +28,7 @@ services:
       DATABASE_URL: "postgresql://taschenkonto:${POSTGRES_PASSWORD:-taschenkonto}@db:5432/taschenkonto"
       AUTH_SECRET: ${AUTH_SECRET}
       AUTH_TRUST_HOST: "true"
+      AUTH_URL: ${AUTH_URL:-}
       AUTH_RESEND_KEY: ${AUTH_RESEND_KEY:-}
       AUTH_EMAIL_FROM: ${AUTH_EMAIL_FROM:-}
       KIOSK_SESSION_SECRET: ${KIOSK_SESSION_SECRET}
