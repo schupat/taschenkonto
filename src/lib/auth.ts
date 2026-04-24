@@ -14,12 +14,17 @@ const providers: any[] = [
     async sendVerificationRequest({ identifier: email, url, provider }) {
       // Fix the URL host if AUTH_URL is set (next-auth beta may use internal Docker host)
       let magicUrl = url;
-      if (process.env.AUTH_URL) {
-        const authBase = new URL(process.env.AUTH_URL);
-        const linkUrl = new URL(url);
-        linkUrl.protocol = authBase.protocol;
-        linkUrl.host = authBase.host;
-        magicUrl = linkUrl.toString();
+      const rawAuthUrl = (process.env.AUTH_URL ?? "").replace(/^["']|["']$/g, "").trim();
+      if (rawAuthUrl) {
+        try {
+          const authBase = new URL(rawAuthUrl);
+          const linkUrl = new URL(url);
+          linkUrl.protocol = authBase.protocol;
+          linkUrl.host = authBase.host;
+          magicUrl = linkUrl.toString();
+        } catch {
+          console.error("[auth] Invalid AUTH_URL, magic link URL not rewritten:", rawAuthUrl);
+        }
       }
 
       const resend = new ResendClient(process.env.AUTH_RESEND_KEY);
