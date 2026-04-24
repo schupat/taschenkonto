@@ -32,7 +32,31 @@ const providers: any[] = [
         from: provider.from!,
         to: email,
         subject: "Anmelden bei Taschenkonto",
-        html: `<p>Klicke auf den Link, um dich anzumelden:</p><p><a href="${magicUrl}">${magicUrl}</a></p>`,
+        html: `<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 16px">
+    <tr><td align="center">
+      <table width="100%" style="max-width:480px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+        <tr><td style="padding:32px 32px 0;text-align:center">
+          <span style="font-size:36px">🏦</span>
+          <h1 style="margin:16px 0 4px;font-size:22px;font-weight:700;color:#111827">Anmelden bei Taschenkonto</h1>
+          <p style="margin:0;font-size:14px;color:#6b7280">Klicke auf den Button, um dich anzumelden.</p>
+        </td></tr>
+        <tr><td style="padding:28px 32px;text-align:center">
+          <a href="${magicUrl}" style="display:inline-block;padding:12px 28px;background:#4f46e5;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px">Jetzt anmelden</a>
+        </td></tr>
+        <tr><td style="padding:0 32px 28px;text-align:center;border-top:1px solid #f3f4f6">
+          <p style="margin:20px 0 8px;font-size:12px;color:#9ca3af">Oder kopiere diesen Link in deinen Browser:</p>
+          <p style="margin:0;font-size:11px;color:#6b7280;word-break:break-all">${magicUrl}</p>
+          <p style="margin:20px 0 0;font-size:11px;color:#d1d5db">Falls du diese E-Mail nicht angefordert hast, kannst du sie ignorieren.</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
       });
     },
   }),
