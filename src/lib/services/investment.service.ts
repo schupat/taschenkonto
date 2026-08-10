@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { InvestmentType } from "@prisma/client";
+import { getSaldoForUpdate } from "@/lib/services/transaction.service";
 
 // Re-export pure function from shared module (safe for client import)
 export { getInvestmentProjection } from "@/lib/investment-projection";
@@ -75,11 +76,7 @@ export async function createInvestment(
 
   // VULN-05 fix: Interactive transaction — balance check + writes are atomic
   return prisma.$transaction(async (tx) => {
-    const saldoResult = await tx.transaction.aggregate({
-      where: { childAccountId },
-      _sum: { amountCents: true },
-    });
-    const saldo = saldoResult._sum.amountCents ?? 0;
+    const saldo = await getSaldoForUpdate(tx, childAccountId);
     if (saldo < data.amountCents) {
       throw new Error("Insufficient balance");
     }
@@ -120,7 +117,6 @@ export async function withdrawInvestment(
   childAccountId: string,
   familyId: string
 ) {
-  // Interactive $transaction: status check + writes are atomic (prevents double-withdrawal)
   return prisma.$transaction(async (tx) => {
     const investment = await tx.investment.findFirst({
       where: { id: investmentId, childAccountId, familyId, status: { not: "WITHDRAWN" } },
@@ -138,10 +134,15 @@ export async function withdrawInvestment(
         ? "Auszahlung: Tagesgeld"
         : "Auszahlung: Festgeld (fällig)";
 
-    await tx.investment.update({
-      where: { id: investmentId },
+    // The read above is NOT enough: two concurrent requests both see a
+    // non-withdrawn investment under READ COMMITTED and both pay out. Carrying
+    // the status into the UPDATE makes it a claim — Postgres re-checks the
+    // predicate against the committed row, so the loser matches nothing.
+    const claimed = await tx.investment.updateMany({
+      where: { id: investmentId, status: { not: "WITHDRAWN" } },
       data: { status: "WITHDRAWN" },
     });
+    if (claimed.count === 0) throw new Error("Investment not found");
 
     await tx.transaction.create({
       data: {
@@ -175,11 +176,7 @@ export async function topUpInvestment(
 
   // VULN-05 fix: Interactive transaction — balance check + writes are atomic
   return prisma.$transaction(async (tx) => {
-    const saldoResult = await tx.transaction.aggregate({
-      where: { childAccountId },
-      _sum: { amountCents: true },
-    });
-    const saldo = saldoResult._sum.amountCents ?? 0;
+    const saldo = await getSaldoForUpdate(tx, childAccountId);
     if (saldo < additionalCents) {
       throw new Error("Insufficient balance");
     }
@@ -240,7 +237,6 @@ export async function approveWithdrawal(
   familyId: string,
   userId: string
 ) {
-  // Interactive $transaction: status check + writes are atomic (prevents double-approval)
   return prisma.$transaction(async (tx) => {
     const investment = await tx.investment.findFirst({
       where: { id: investmentId, familyId, withdrawalStatus: "PENDING" },
@@ -253,8 +249,10 @@ export async function approveWithdrawal(
         ? "Auszahlung: Tagesgeld"
         : "Auszahlung: Festgeld (fällig)";
 
-    await tx.investment.update({
-      where: { id: investmentId },
+    // Same claim as in withdrawInvestment: the PENDING check has to live in
+    // the UPDATE, otherwise a double-click pays out twice.
+    const claimed = await tx.investment.updateMany({
+      where: { id: investmentId, familyId, withdrawalStatus: "PENDING" },
       data: {
         status: "WITHDRAWN",
         withdrawalStatus: "APPROVED",
@@ -262,6 +260,7 @@ export async function approveWithdrawal(
         withdrawalApprovedBy: userId,
       },
     });
+    if (claimed.count === 0) throw new Error("No pending withdrawal found");
 
     await tx.transaction.create({
       data: {

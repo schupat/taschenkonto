@@ -1,7 +1,33 @@
 import { prisma } from "@/lib/prisma";
-import type { TransactionType } from "@prisma/client";
+import type { Prisma, TransactionType } from "@prisma/client";
 
 export type { TransactionType };
+
+/**
+ * Saldo read under a row lock on the child — for any transaction that then
+ * spends against it.
+ *
+ * A plain SUM() is not enough. Under READ COMMITTED two concurrent spends both
+ * read the same balance, both pass their "can the child afford this?" check and
+ * both book (write skew), so a child with 10 € can invest 50 €. Locking the
+ * ChildAccount row serialises every spend for that child; different children
+ * never contend.
+ *
+ * Every affordability check must go through this. Callers must already be
+ * inside a `prisma.$transaction` — the lock is only held until it commits.
+ */
+export async function getSaldoForUpdate(
+  tx: Prisma.TransactionClient,
+  childAccountId: string
+): Promise<number> {
+  await tx.$queryRaw`SELECT id FROM "ChildAccount" WHERE id = ${childAccountId} FOR UPDATE`;
+
+  const { _sum } = await tx.transaction.aggregate({
+    where: { childAccountId },
+    _sum: { amountCents: true },
+  });
+  return _sum.amountCents ?? 0;
+}
 
 export async function getTransactions(
   childAccountId: string,
