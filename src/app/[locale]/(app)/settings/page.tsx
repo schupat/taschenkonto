@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 import { SettingsForm } from "./SettingsForm";
+import { KioskLink } from "./KioskLink";
 
 export default async function SettingsPage() {
   const session = await requireAuth();
@@ -35,6 +36,12 @@ export default async function SettingsPage() {
             currency={family.currency}
             kioskInvestmentsEnabled={family.kioskInvestmentsEnabled}
           />
+        </div>
+      </div>
+
+      <div className="animate-fade-in-up stagger-2 mt-6 max-w-lg">
+        <div className="rounded-2xl border border-border/50 bg-bg-card p-6 shadow-sm">
+          <KioskLink familyId={session.familyId} />
         </div>
       </div>
     </div>

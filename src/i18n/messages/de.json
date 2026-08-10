@@ -11,7 +11,9 @@
     "confirm": "Bestätigen",
     "search": "Suchen",
     "noResults": "Keine Ergebnisse",
-    "parent": "Eltern"
+    "parent": "Eltern",
+    "copy": "Kopieren",
+    "copied": "Kopiert!"
   },
   "marketing": {
     "badge": "Open Source & Kostenlos",
@@ -77,6 +79,7 @@
     "loginSubtitle": "Wir senden dir einen Login-Link per E-Mail.",
     "loginButton": "Magic Link senden",
     "loginError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "accessDenied": "Diese E-Mail-Adresse ist für diese Instanz nicht freigeschaltet.",
     "checkEmail": "Prüfe dein Postfach!",
     "checkEmailDetail": "Wir haben einen Anmeldelink an {email} gesendet.",
     "resend": "Erneut senden",
@@ -256,7 +259,9 @@
     "currency": "Währung",
     "kioskInvestments": "Kiosk-Anlagen",
     "kioskInvestmentsDesc": "Kinder können im Kiosk selbst Anlagen erstellen",
-    "saved": "Einstellungen gespeichert"
+    "saved": "Einstellungen gespeichert",
+    "kioskLink": "Kiosk-Link für die Kinder",
+    "kioskLinkDesc": "Diesen Link auf dem Tablet öffnen. Die Kinder wählen dort ihren Namen und melden sich mit ihrer PIN an."
   },
   "setup": {
     "title": "Willkommen bei Taschenkonto!",
@@ -291,6 +296,10 @@
     "moneyWorksForYou": "Dein Geld arbeitet für dich!",
     "interestExplainer": "Jeden Monat bekommst du Zinsen. Die Zinsen werden auch verzinst — das nennt man Zinseszins!",
     "withdrawSuccess": "Auszahlung erfolgreich!",
-    "investSuccess": "Anlage erstellt!"
+    "investSuccess": "Anlage erstellt!",
+    "noFamilyId": "Kein Familien-Link",
+    "noFamilyIdHint": "Diese Seite braucht den Kiosk-Link aus den Einstellungen der Eltern-App.",
+    "selectHint": "Wähle deinen Namen",
+    "loadError": "Verbindung fehlgeschlagen"
   }
 }

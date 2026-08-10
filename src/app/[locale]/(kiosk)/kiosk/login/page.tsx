@@ -20,7 +20,9 @@ export default function KioskLoginPage() {
 
   const [children, setChildren] = useState<Child[]>([]);
   const [selected, setSelected] = useState<Child | null>(null);
-  const [error, setError] = useState("");
+  // Stores the message key, not the message: the effect below must not
+  // depend on the translator function.
+  const [errorKey, setErrorKey] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [loadingChildren, setLoadingChildren] = useState(!!familyId);
   const [showWelcome, setShowWelcome] = useState(true);
@@ -33,13 +35,13 @@ export default function KioskLoginPage() {
         setChildren(data);
         setTimeout(() => setShowWelcome(false), 1200);
       })
-      .catch(() => setError("Error loading"))
+      .catch(() => setErrorKey("loadError"))
       .finally(() => setLoadingChildren(false));
   }, [familyId]);
 
   async function handlePin(pin: string) {
     if (!selected) return;
-    setError("");
+    setErrorKey("");
     setSubmitting(true);
 
     try {
@@ -50,14 +52,14 @@ export default function KioskLoginPage() {
       });
 
       if (!res.ok) {
-        setError(t("wrongPin"));
+        setErrorKey("wrongPin");
         setSubmitting(false);
         return;
       }
 
       router.push("/kiosk");
     } catch {
-      setError("Error");
+      setErrorKey("loadError");
       setSubmitting(false);
     }
   }
@@ -65,9 +67,11 @@ export default function KioskLoginPage() {
   if (!familyId) {
     return (
       <div className="flex min-h-[80vh] flex-col items-center justify-center">
-        <div className="text-red-400 crt-glow">{">"} ERROR: No family ID</div>
-        <p className="mt-2 text-sm text-kiosk-text-dim">
-          Add ?family=FAMILY_ID to the URL
+        <div className="text-red-400 crt-glow">
+          {">"} {t("noFamilyId")}
+        </div>
+        <p className="mt-2 max-w-sm text-center text-sm text-kiosk-text-dim">
+          {t("noFamilyIdHint")}
         </p>
       </div>
     );
@@ -127,7 +131,7 @@ export default function KioskLoginPage() {
         )}
 
         <div className="text-xs text-kiosk-text-dim">
-          {">"} Select your account to continue
+          {">"} {t("selectHint")}
         </div>
       </div>
     );
@@ -139,7 +143,7 @@ export default function KioskLoginPage() {
       <button
         onClick={() => {
           setSelected(null);
-          setError("");
+          setErrorKey("");
         }}
         className="text-sm text-kiosk-text-dim transition-colors hover:text-kiosk-text"
       >
@@ -153,9 +157,9 @@ export default function KioskLoginPage() {
 
       <TerminalScreen title={t("enterPin")} className="w-full max-w-xs sm:max-w-sm">
         <div className="flex flex-col items-center py-4">
-          {error && (
+          {errorKey && (
             <div className="mb-4 w-full rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm text-red-400">
-              {">"} {error}
+              {">"} {t(errorKey)}
             </div>
           )}
           <NumpadInput onSubmit={handlePin} disabled={submitting} />

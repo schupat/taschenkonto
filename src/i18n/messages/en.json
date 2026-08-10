@@ -11,7 +11,9 @@
     "confirm": "Confirm",
     "search": "Search",
     "noResults": "No results",
-    "parent": "Parent"
+    "parent": "Parent",
+    "copy": "Copy",
+    "copied": "Copied!"
   },
   "marketing": {
     "badge": "Open Source & Free",
@@ -77,6 +79,7 @@
     "loginSubtitle": "We'll send you a login link via email.",
     "loginButton": "Send Magic Link",
     "loginError": "Something went wrong. Please try again.",
+    "accessDenied": "This email address is not enabled for this instance.",
     "checkEmail": "Check your inbox!",
     "checkEmailDetail": "We sent a login link to {email}.",
     "resend": "Send again",
@@ -256,7 +259,9 @@
     "currency": "Currency",
     "kioskInvestments": "Kiosk Investments",
     "kioskInvestmentsDesc": "Children can create investments from the kiosk",
-    "saved": "Settings saved"
+    "saved": "Settings saved",
+    "kioskLink": "Kiosk link for the kids",
+    "kioskLinkDesc": "Open this link on the tablet. The kids pick their name there and sign in with their PIN."
   },
   "setup": {
     "title": "Welcome to Taschenkonto!",
@@ -291,6 +296,10 @@
     "moneyWorksForYou": "Your money works for you!",
     "interestExplainer": "Every month you earn interest. The interest earns interest too — that's compound interest!",
     "withdrawSuccess": "Withdrawal successful!",
-    "investSuccess": "Investment created!"
+    "investSuccess": "Investment created!",
+    "noFamilyId": "No family link",
+    "noFamilyIdHint": "This page needs the kiosk link from the settings page in the parent app.",
+    "selectHint": "Pick your name",
+    "loadError": "Connection failed"
   }
 }
