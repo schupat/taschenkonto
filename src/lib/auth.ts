@@ -5,6 +5,7 @@ import { Resend as ResendClient } from "resend";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
+import { isEmailAllowed } from "./email-allowlist";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const providers: any[] = [
@@ -91,6 +92,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ user }) {
+      // Runs twice for magic links: once before the mail is sent (user.id is
+      // the address, not a DB id) and once when the link is clicked. Rejecting
+      // here therefore also stops the Resend call for unlisted addresses.
+      if (!isEmailAllowed(user.email)) return false;
+
       // On first magic-link login, create a Family for the user
       if (user.id) {
         const dbUser = await prisma.user.findUnique({

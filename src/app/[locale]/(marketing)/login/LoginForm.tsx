@@ -7,7 +7,11 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
-export default function LoginForm() {
+export default function LoginForm({
+  openRegistration = true,
+}: {
+  openRegistration?: boolean;
+}) {
   const t = useTranslations("auth");
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -28,7 +32,11 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        setError(t("loginError"));
+        setError(
+          result.error.includes("AccessDenied")
+            ? t("accessDenied")
+            : t("loginError")
+        );
       } else {
         setSent(true);
       }
@@ -100,9 +108,11 @@ export default function LoginForm() {
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-xs text-text-muted">
-            {t("newUser")}
-          </p>
+          {openRegistration && (
+            <p className="mt-6 text-center text-xs text-text-muted">
+              {t("newUser")}
+            </p>
+          )}
 
           {process.env.NODE_ENV !== "production" && (
             <button
