@@ -44,8 +44,18 @@ jobs:
 
       - run: npm test
 
+      # The scheduler works in local time. Runners are UTC, so a second pass in
+      # a shifted zone catches expectations that silently assume one timezone.
+      - run: npm test
+        env:
+          TZ: Pacific/Kiritimati
+
       - run: npx prisma migrate deploy
 
       - run: npm run test:db
+
+      - run: npm run test:db
+        env:
+          TZ: Pacific/Kiritimati
 
       - run: npm run audit
