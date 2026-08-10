@@ -5,8 +5,11 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
-# postinstall runs `prisma generate`
-RUN npm ci
+# postinstall runs `prisma generate`.
+# Retries and a long timeout because the arm64 image is built under QEMU
+# emulation in CI, where npm's defaults are tight enough that a slow registry
+# response fails the whole build.
+RUN npm ci --fetch-retries 5 --fetch-retry-maxtimeout 120000 --fetch-timeout 600000
 
 # ── Stage 2: Build application ─────────────────────────────
 FROM node:20-alpine AS builder
