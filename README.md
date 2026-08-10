@@ -56,8 +56,17 @@ Mindestens diese Werte anpassen:
 | `CRON_SECRET` | `openssl rand -base64 32` | ✅ |
 | `POSTGRES_PASSWORD` | Datenbank-Passwort (Standard: `taschenkonto`) | ✅ |
 | `AUTH_RESEND_KEY` | Resend-API-Key für Magic Links | ✅ |
+| `ALLOWED_EMAILS` | Kommaseparierte Liste der Adressen, die sich anmelden dürfen | ⚠️ siehe unten |
 | `AUTH_EMAIL_FROM` | Absenderadresse (z.B. `Taschenkonto <noreply@deinedomain.de>`) | Optional |
 | `APP_PORT` | Host-Port (Standard: `3000`) | Optional |
+
+> **⚠️ Offene Registrierung:** Ist `ALLOWED_EMAILS` leer, kann sich **jede** E-Mail-Adresse anmelden und bekommt automatisch eine eigene Familie. Für eine Instanz, die aus dem Internet erreichbar ist, unbedingt setzen:
+>
+> ```env
+> ALLOWED_EMAILS="mama@deinedomain.de,papa@deinedomain.de"
+> ```
+>
+> Nicht gelistete Adressen bekommen gar keine E-Mail — der Resend-Aufruf wird vorher abgebrochen.
 
 ### 3. Starten
 
@@ -193,10 +202,31 @@ Für einen dedizierten Kiosk: Browser im Vollbild-/Kiosk-Modus öffnen und auf `
 npm run dev              # Dev-Server
 npm run build            # Produktions-Build
 npm run lint             # ESLint
+npm run typecheck        # TypeScript
 npx prisma studio        # Visueller DB-Browser
 npx prisma migrate dev   # Migration erstellen/ausführen
 npx prisma db seed       # Demo-Daten laden
 ```
+
+### Tests
+
+```bash
+npm test                 # Unit-Tests (schnell, ohne Datenbank)
+npm run test:db:up       # Wegwerf-Postgres auf Port 55432 starten + migrieren
+npm run test:db          # Datenbank-Tests (Geldlogik, Cron-Idempotenz, Races)
+npm run test:db:down     # Container wieder stoppen
+```
+
+Die Tests unter `tests/db/` laufen gegen ein echtes Postgres, weil genau die
+Invarianten geprüft werden, die es nur in der Datenbank gibt: die
+Idempotenz-Claims der Cron-Jobs, die Unique-Constraints hinter „schon
+storniert" und die Row-Locks, die verhindern, dass ein Kind bei parallelen
+Anfragen mehr anlegt als es hat. Ein gemocktes Prisma würde den Mock testen,
+nicht die Invariante.
+
+Sie teilen sich eine Datenbank und leeren sie zwischen den Tests — daher
+laufen sie seriell (`--test-concurrency=1`). Ein `DATABASE_URL`, dessen Name
+nicht `test` enthält, wird abgelehnt.
 
 ## Projektstruktur
 
